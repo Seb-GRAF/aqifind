@@ -26,7 +26,7 @@ export default function Hero() {
               </p>
               <form className='relative h-12 flex gap-4 flex-shrink w-full sm:max-w-[16rem]'>
                 <Autocomplete
-                  apiKey={process.env.GOOGLE_API_KEY}
+                  apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}
                   language={'en'}
                   onPlaceSelected={(place) => {
                     console.log(place)
