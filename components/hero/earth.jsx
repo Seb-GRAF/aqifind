@@ -5,10 +5,10 @@ import { TextureLoader } from 'three/src/loaders/TextureLoader'
 import * as THREE from 'three'
 import gsap from 'gsap'
 
-import globeVertexShader from '../shaders/globe/vertex.glsl'
-import globeFragmentShader from '../shaders/globe/fragment.glsl'
-import atmosphereVertexShader from '../shaders/atmosphere/vertex.glsl'
-import atmosphereFragmentShader from '../shaders/atmosphere/fragment.glsl'
+import globeVertexShader from '../../shaders/globe/vertex.glsl'
+import globeFragmentShader from '../../shaders/globe/fragment.glsl'
+import atmosphereVertexShader from '../../shaders/atmosphere/vertex.glsl'
+import atmosphereFragmentShader from '../../shaders/atmosphere/fragment.glsl'
 
 import Prism from './prism'
 
@@ -98,7 +98,7 @@ function Earth({ data }) {
   }, [])
 
   useFrame(() => {
-    earthRef.current.rotation.y += 0.0002
+    earthRef.current.rotation.y += 0.0001
   })
 
   return (

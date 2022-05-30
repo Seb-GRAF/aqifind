@@ -15,7 +15,7 @@ export default function Hero() {
         <div className='relative max-w-[100rem] h-full flex flex-col md:flex-row'>
           {/*-- CTA --*/}
 
-          <div className='z-10 md:h-full w-full md:w-1/2 px-8 sm:px-16 md:px-20 py-8 text-white flex items-start md:items-center pt-12 '>
+          <div className='z-10 md:h-full w-full md:w-1/2 px-8 sm:px-16 md:px-20 py-8 text-white flex items-start md:items-center pt-16 '>
             <div className='flex flex-col items-start gap-4 text-lg'>
               <h1 className='text-4xl md:text-5xl'>
                 How polluted is your air?
@@ -26,7 +26,7 @@ export default function Hero() {
               </p>
               <form className='relative h-12 flex gap-4 flex-shrink w-full sm:max-w-[16rem]'>
                 <Autocomplete
-                  apiKey={'AIzaSyD8TeXQEXdigtrGSJfoZa-H7TdK3-NJaYk'}
+                  apiKey={process.env.GOOGLE_API_KEY}
                   language={'en'}
                   onPlaceSelected={(place) => {
                     console.log(place)
@@ -55,7 +55,7 @@ export default function Hero() {
           <div className='absolute md:relative top-1/3 md:top-0 left-0 h-full min-h-[50rem] md:min-h-full w-full md:w-1/2'>
             <div
               id='tooltip'
-              className=' hidden pointer-events-none z-10 fixed flex-col gap-4 top-0 -left-60 md:-left-80 w-60 md:w-80 p-4 text-white bg-emerald-500/50 backdrop-blur rounded-2xl border-solid border-black shadow-lg leading-4'>
+              className=' hidden pointer-events-none z-10 fixed flex-col gap-4 top-0 -left-60 md:-left-80 w-60 md:w-80 p-4 text-white bg-emerald-400/50 backdrop-blur rounded-2xl border-solid border-black shadow-lg leading-4'>
               <p id='tooltip-name'></p>
               <p id='tooltip-aqi'></p>
               <p id='tooltip-time'></p>

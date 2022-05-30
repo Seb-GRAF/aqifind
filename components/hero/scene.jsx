@@ -9,7 +9,7 @@ export default function Scene() {
 
   useEffect(() => {
     fetch(
-      `https://api.waqi.info/v2/map/bounds?latlng=-85,-180,85,180&networks=all&token=653c9ff7e44ce4612d2d1472a0f142f5859e1e28`
+      `https://api.waqi.info/v2/map/bounds?latlng=-85,-180,85,180&networks=all&token=${process.env.NEXT_PUBLIC_AQICN_API_KEY}`
     )
       .then((res) => res.json())
       .then((res) => {
@@ -33,7 +33,7 @@ export default function Scene() {
           dampingFactor={0.1}
           enablePan={false}
           rotateSpeed={0.5}
-          // enableZoom={false}
+          enableZoom={false}
         />
         <Suspense fallback={null}>
           <Earth data={data} />

@@ -1,11 +1,10 @@
-import Hero from '../components/hero'
-import Script from 'next/script'
-import Head from 'next/head'
+import Hero from '../components/hero/hero'
+import Layout from '../components/layout/layout'
 
 export default function Home() {
   return (
-    <>
+    <Layout>
       <Hero />
-    </>
+    </Layout>
   )
 }
