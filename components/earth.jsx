@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
-import { useLoader } from '@react-three/fiber'
+import { useFrame, useLoader } from '@react-three/fiber'
 import { TextureLoader } from 'three/src/loaders/TextureLoader'
 
 import * as THREE from 'three'
@@ -15,7 +15,7 @@ import Prism from './prism'
 import { useThree } from '@react-three/fiber'
 
 function Globe({ radius }) {
-  const globeTexture = useLoader(TextureLoader, '/textures/globe3.jpg')
+  const globeTexture = useLoader(TextureLoader, '/textures/globe2.jpg')
   return (
     <mesh rotation={[0, -Math.PI / 2, 0]}>
       <sphereBufferGeometry args={[radius, 64, 64]} />
@@ -57,12 +57,17 @@ function Atmosphere({ radius }) {
 
 function Earth({ data }) {
   const earthRef = useRef()
-  const [radius, setRadius] = useState(1)
-  const { camera } = useThree()
+  const [radius, setRadius] = useState(
+    window.innerWidth < 640
+      ? window.innerWidth / 500
+      : window.innerWidth < 768
+      ? window.innerWidth / 600
+      : Math.min(window.innerWidth / 1300, 1)
+  )
 
+  // Resize for responsive
   const onWindowResize = () => {
     const width = window.innerWidth
-    // camera.zoom = width < 768 ? width / 2 : Math.min(width / 5, 250)
     setRadius(
       width < 640
         ? width / 500
@@ -72,13 +77,9 @@ function Earth({ data }) {
     )
   }
 
+  // Listener for mouse movement and resize events
   useEffect(() => {
-    window.addEventListener('resize', onWindowResize, false)
-
-    return () => window.removeEventListener('resize', onWindowResize, false)
-  }, [])
-
-  useEffect(() => {
+    console.log(data)
     const onMouseMove = (event) => {
       const { clientX, clientY } = event
       gsap.set('#tooltip', {
@@ -86,12 +87,19 @@ function Earth({ data }) {
         y: clientY,
       })
     }
+
     addEventListener('mousemove', onMouseMove)
+    addEventListener('resize', onWindowResize, false)
 
     return () => {
       removeEventListener('mousemove', onMouseMove)
+      removeEventListener('resize', onWindowResize, false)
     }
   }, [])
+
+  useFrame(() => {
+    earthRef.current.rotation.y += 0.0002
+  })
 
   return (
     <group
@@ -101,8 +109,11 @@ function Earth({ data }) {
       }}>
       <Globe radius={radius} />
       <Atmosphere radius={radius} />
-      {data
-        ? data.map((el, i) => (
+
+      {
+        // Map through the data array to create prism
+        data &&
+          data.map((el, i) => (
             <Prism
               radius={radius}
               key={el.station.name + i}
@@ -116,7 +127,7 @@ function Earth({ data }) {
               }}
             />
           ))
-        : ''}
+      }
     </group>
   )
 }

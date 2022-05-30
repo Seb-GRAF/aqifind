@@ -21,7 +21,7 @@ export default function Scene() {
   }, [])
 
   return (
-    <div className='h-full' id='canvas-container'>
+    <div className='h-full cursor-pointer' id='canvas-container'>
       <Canvas
         orthographic
         camera={{
@@ -33,19 +33,9 @@ export default function Scene() {
           dampingFactor={0.1}
           enablePan={false}
           rotateSpeed={0.5}
-          enableZoom={false}
+          // enableZoom={false}
         />
         <Suspense fallback={null}>
-          <ambientLight intensity={1} />
-          {/* <pointLight position={[0, 0, 4]} intensity={2} color='violet' /> */}
-          <directionalLight
-            castShadow
-            shadow-mapSize-height={512}
-            shadow-mapSize-width={512}
-            position={[0, 0, 4]}
-            intensity={2}
-            color='violet'
-          />
           <Earth data={data} />
         </Suspense>
       </Canvas>

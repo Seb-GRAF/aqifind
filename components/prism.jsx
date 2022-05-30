@@ -3,19 +3,31 @@ import { useState, useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import gsap from 'gsap'
 import moment from 'moment'
+import { TextureLoader } from 'three/src/loaders/TextureLoader'
+import { Wireframe } from 'three-stdlib'
 
+// Prisms color palette
 const colors = {
-  hazardous: 0xaa74cf,
-  veryUnhealthy: 0x978ed1,
-  unhealthy: 0x83a9d4,
-  high: 0x70c3d6,
-  moderate: 0x5cded9,
-  good: 0x49f8db,
+  hazardous: '#E763F9',
+  veryUnhealthy: '#B982E1',
+  unhealthy: '#B982E1',
+  high: '#8BA1CA',
+  moderate: '#5CC1B2',
+  good: '#00FF83',
+  // hazardous: 0xaa74cf,
+  // veryUnhealthy: 0x978ed1,
+  // unhealthy: 0x83a9d4,
+  // high: 0x70c3d6,
+  // moderate: 0x5cded9,
+  // good: 0x49f8db,
 }
 
 export default function Prism({ lat, long, aqi, info, radius }) {
   const prismRef = useRef()
-  let [properties, setProperties] = useState({
+  const matcapTexture = useLoader(TextureLoader, '/textures/prism-matcap2.jpg')
+
+  // default properties
+  const [properties, setProperties] = useState({
     height: 0,
     width: 0,
     color: colors.good,
@@ -24,26 +36,47 @@ export default function Prism({ lat, long, aqi, info, radius }) {
     z: Math.cos((lat / 180) * Math.PI) * Math.cos((long / 180) * Math.PI),
   })
 
-  // Set parameters of mesh based on data
+  // Prism animation
+  const animatePrism = (prism) => {
+    gsap.from(prism.scale, {
+      duration: 1,
+      z: 0,
+      ease: 'power2',
+      onComplete: () => {
+        gsap.to(prism.scale, {
+          duration: 2,
+          z: 1.4,
+          yoyo: true,
+          repeat: -1,
+          ease: 'sine.inOut',
+          delay: Math.random(),
+        })
+      },
+    })
+  }
+
+  // Parameters of prisms
   const setParameters = () => {
     if (aqi === NaN || aqi === undefined || aqi === '-') return
 
+    // sets width height and color of prism based on aqi
     setProperties((prevState) => ({
       ...prevState,
-      height: Math.min(aqi / 2000, 0.1 + Math.random() * 0.1),
+      height: Math.min(aqi / 2000, 0.11 + Math.random() * 0.1),
+      // height: aqi / 3000,
 
       width:
         aqi >= 301
-          ? 0.017
+          ? 0.019
           : aqi >= 201
-          ? 0.013
+          ? 0.017
           : aqi >= 151
-          ? 0.011
+          ? 0.015
           : aqi >= 101
-          ? 0.01
+          ? 0.013
           : aqi >= 51
-          ? 0.008
-          : 0.006,
+          ? 0.012
+          : 0.01,
 
       color:
         aqi >= 301
@@ -57,32 +90,19 @@ export default function Prism({ lat, long, aqi, info, radius }) {
           : aqi >= 51
           ? colors.moderate
           : colors.good,
+      // color: 0x00ff83,
     }))
-
     prismRef.current.lookAt(0, 0, 0)
+
+    // Custom properties for tooltip
     prismRef.current.name = info.name
     prismRef.current.aqi = info.aqi
     prismRef.current.time = info.time
 
-    if (prismRef.current) {
-      const prism = prismRef.current
-      gsap.from(prism.scale, {
-        duration: 1,
-        z: 0,
-        ease: 'power2',
-        onComplete: () => {
-          gsap.to(prism.scale, {
-            duration: 2,
-            z: 1.4,
-            yoyo: true,
-            repeat: -1,
-            ease: 'sine.inOut',
-            delay: Math.random(),
-          })
-        },
-      })
-    }
+    // Start prism animation
+    if (prismRef.current) animatePrism(prismRef.current)
   }
+
   // Displays tooltip
   const onPointerEnter = (e) => {
     const { name, aqi, time } = e.object
@@ -131,12 +151,16 @@ export default function Prism({ lat, long, aqi, info, radius }) {
           radius * properties.width,
           radius * properties.width,
           radius * properties.height,
+          10,
+          10,
+          10,
         ]}
       />
-      <meshStandardMaterial
+      <meshMatcapMaterial
+        matcap={matcapTexture}
         color={properties.color}
-        metalness={0.5}
-        roughness={0.5}
+        // metalness={0.5}
+        // roughness={0.5}
       />
     </mesh>
   )

@@ -20,6 +20,7 @@
     "react-dom": "18.1.0",
     "react-google-autocomplete": "^2.7.0",
     "react-places-autocomplete": "^7.3.0",
+    "recharts": "^2.1.10",
     "three": "^0.141.0"
   },
   "devDependencies": {
