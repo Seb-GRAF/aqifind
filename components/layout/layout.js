@@ -7,6 +7,7 @@ export default function Layout({ children }) {
       <Head>
         <title>Air quality</title>
       </Head>
+
       <Nav />
       {children}
     </>

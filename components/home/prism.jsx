@@ -39,9 +39,10 @@ export default function Prism({ lat, long, aqi, info, radius }) {
   // Prism animation
   const animatePrism = (prism) => {
     gsap.from(prism.scale, {
-      duration: 1,
+      duration: 2,
       z: 0,
       ease: 'power2',
+      delay: 1,
       onComplete: () => {
         gsap.to(prism.scale, {
           duration: 2,
@@ -120,9 +121,9 @@ export default function Prism({ lat, long, aqi, info, radius }) {
         ? 'Moderate'
         : 'Good'
     }) `
-    document.querySelector('#tooltip-time').innerHTML = `${moment(time).format(
-      'hh:mm A - MMMM DD YYYY'
-    )}`
+    document.querySelector('#tooltip-time').innerHTML = `updated at ${moment(
+      time
+    ).format('hh:mm A')}`
 
     gsap.set('#tooltip', {
       display: 'flex',

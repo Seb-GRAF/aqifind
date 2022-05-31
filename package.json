@@ -14,7 +14,7 @@
     "firebase-admin": "^10.2.0",
     "firebase-functions": "^3.21.2",
     "glslify-loader": "^2.0.0",
-    "gsap": "^3.10.4",
+    "gsap": "npm:@gsap/shockingly@^3.10.4",
     "moment": "^2.29.3",
     "next": "12.1.6",
     "raw-loader": "^4.0.2",

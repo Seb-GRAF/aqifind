@@ -3,7 +3,7 @@ const withTM = require('next-transpile-modules')(['three'])
 
 module.exports = {
   withTM,
-  reactStrictMode: true,
+  reactStrictMode: false,
   webpack: (config, options) => {
     config.module.rules.push({
       test: /\.(glsl|vs|fs|vert|frag)$/,

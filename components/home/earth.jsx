@@ -15,7 +15,7 @@ import Prism from './prism'
 import { useThree } from '@react-three/fiber'
 
 function Globe({ radius }) {
-  const globeTexture = useLoader(TextureLoader, '/textures/globe2.jpg')
+  const globeTexture = useLoader(TextureLoader, '/textures/globe.jpg')
   return (
     <mesh rotation={[0, -Math.PI / 2, 0]}>
       <sphereBufferGeometry args={[radius, 64, 64]} />
@@ -79,7 +79,6 @@ function Earth({ data }) {
 
   // Listener for mouse movement and resize events
   useEffect(() => {
-    console.log(data)
     const onMouseMove = (event) => {
       const { clientX, clientY } = event
       gsap.set('#tooltip', {

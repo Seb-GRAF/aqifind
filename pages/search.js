@@ -5,11 +5,16 @@ import Chart from '../components/search/chart'
 import gsap from 'gsap'
 import Layout from '../components/layout/layout'
 
+import { useRouter } from 'next/router'
+
 export default function Search() {
+  const [count, setCount] = useState(0)
+  const [loaded, setLoaded] = useState(false)
   const [data, setData] = useState()
+  const [pictures, setPictures] = useState()
   const [picture, setPicture] = useState()
   const [cityName, setCityName] = useState('')
-
+  const router = useRouter()
   const polluants = {
     pm25: 'PM2.5',
     pm10: 'PM10',
@@ -40,10 +45,9 @@ export default function Search() {
     }
   }
 
-  // Fetch city data on load
-  useEffect(() => {
-    const name = window.location.search.replace('?q=', '').replace('%20', '-')
-    const randomPage = Math.floor(Math.random() * 3) + 1
+  const fetchData = () => {
+    const name = location.search.replace('?q=', '').replace('%20', '-')
+    const randomPage = Math.floor(Math.random() * 5) + 1
     setCityName(name)
     fetch(
       `https://api.waqi.info/feed/${name}/?token=${process.env.NEXT_PUBLIC_AQICN_API_KEY}`
@@ -51,6 +55,7 @@ export default function Search() {
       .then((res) => res.json())
       .then((res) => {
         setData(res)
+        console.log(res)
       })
       .catch((error) => {
         console.error(error)
@@ -60,33 +65,57 @@ export default function Search() {
     )
       .then((res) => res.json())
       .then((res) => {
-        console.log(res)
-        setPicture(res.results[Math.floor(Math.random() * 9)])
+        // setPicture(res.results[Math.floor(Math.random() * 9)])
+        setPictures(res.results)
       })
       .catch((error) => {
         console.error(error)
       })
-  }, [])
+  }
+
+  const changePicture = () => {
+    setPicture(pictures[Math.floor(Math.random() * 9)])
+  }
 
   useEffect(() => {
     const onMouseMove = (event) => {
       const { clientX, clientY } = event
-      gsap.set('#tooltip', {
-        x: clientX,
-        y: clientY,
-      })
+      if (document.getElementById('tooltip'))
+        gsap.set('#tooltip', {
+          x: clientX,
+          y: clientY,
+        })
     }
-
     addEventListener('mousemove', onMouseMove)
+
+    fetchData()
+    setLoaded(true)
 
     return () => {
       removeEventListener('mousemove', onMouseMove)
     }
   }, [])
 
+  useEffect(() => {
+    const name = location.search
+      .replace('?q=', '')
+      .replace('%20', '-')
+      .toLowerCase()
+    if (loaded && name !== cityName) {
+      fetchData()
+    }
+  }, [router])
+
+  useEffect(() => {
+    if (pictures) {
+      count < 10 ? setCount(count + 1) : setCount(0)
+      setPicture(pictures[count])
+    }
+  }, [pictures])
+
   return (
     <Layout>
-      <section className='my-0 mx-auto min-h-screen flex flex-col gap-12 p-[5vw] max-w-[100rem] pt-16'>
+      <section className='my-0 mx-auto min-h-screen flex flex-col gap-12 p-[5vw] max-w-[80rem] pt-4'>
         {data && data.status === 'ok' ? (
           <>
             {/* --- TITLE SECTION --- */}
@@ -94,7 +123,7 @@ export default function Search() {
               <h1 className=' text-3xl font-bold tracking-wider'>
                 Air quality in{' '}
                 <b className='capitalize font-bold tracking-wider'>
-                  {cityName}
+                  {decodeURIComponent(cityName)}
                 </b>
               </h1>
               <p className='opacity-70'>
@@ -105,53 +134,24 @@ export default function Search() {
                 Last updated {moment(data.data.time.iso).fromNow()}
               </p>
             </div>
-            {/* --- CITY INFO --- */}
             <div className='flex flex-col md:flex-row  gap-4'>
-              {/* CITY IMAGE AND WEATHER */}
-              <div className='flex flex-col gap-4 w-full md:w-1/2 overflow-hidden'>
-                {picture && (
-                  <figure className='relative h-52 md:h-96 flex flex-col rounded-md overflow-hidden'>
-                    <Image
-                      src={picture.urls.regular}
-                      alt={cityName}
-                      layout='fill'
-                      objectFit='cover'
-                    />
-                    <figcaption className='z-20 text-sm absolute bottom-0 text-white mb-2 ml-3'>
-                      Picture by{' '}
-                      <a className='underline' href={picture.links.html}>
-                        {picture.user.name}
-                      </a>
-                    </figcaption>
-                  </figure>
-                )}
-                <div className='flex flex-col gap-2 bg-slate-100 rounded-md p-4'>
-                  <p>Weather:</p>
-                  {Object.keys(data.data.iaqi)
-                    .filter(filterWeather)
-                    .sort()
-                    .map((keyName, index) => (
-                      <p key={keyName + index}>
-                        {weather[keyName]}: {data.data.iaqi[keyName].v}
-                      </p>
-                    ))}
-                </div>
-              </div>
-              {/*  DATA  */}
-              <div className='flex flex-col w-full h-fit md:w-1/2 rounded-md overflow-hidden'>
+              {/* --- CITY IMAGE AND AQI --- */}
+              <div className='flex flex-col gap-4 w-full md:w-1/2 overflow-hidden '>
                 <div
-                  className={`flex h-fit gap-4 p-4 ${
+                  className={`flex h-fit gap-4 p-4 rounded-md ${
                     data.data.aqi >= 301
-                      ? 'bg-[#A15AFF]'
+                      ? 'bg-[#A159FF]'
                       : data.data.aqi >= 201
-                      ? 'bg-[#9074E6]'
+                      ? 'bg-[#9866F2]'
                       : data.data.aqi >= 151
-                      ? 'bg-[#7E8ECC]'
+                      ? 'bg-[#9073E6]'
                       : data.data.aqi >= 101
-                      ? 'bg-[#6DA8B3]'
+                      ? 'bg-[#8780D9]'
                       : data.data.aqi >= 51
+                      ? 'bg-[#759BBF]'
+                      : data.data.aqi >= 0
                       ? 'bg-[#5BC299]'
-                      : 'bg-[#4ADE80]'
+                      : 'bg-[#d96a6a]'
                   }`}>
                   <div className='flex flex-col items-center justify-center p-4 bg-black/10 rounded-md'>
                     <p>AQI</p>
@@ -170,22 +170,79 @@ export default function Search() {
                         ? 'High'
                         : data.data.aqi >= 51
                         ? 'Moderate'
-                        : 'Good'}
+                        : data.data.aqi >= 0
+                        ? 'Good'
+                        : 'No data'}
                     </p>
                   </div>
                 </div>
-                <div className='flex flex-col gap-4 p-4 w-full bg-slate-100'>
-                  <p>Polluants:</p>
+                {picture && (
+                  <figure
+                    className={`relative h-52 md:h-96 flex flex-col rounded-md overflow-hidden after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1/3 after:bg-gradient-to-t after:from-black/50 after:to-transparent after:pointer-events-none ${
+                      data.data.aqi >= 301
+                        ? 'bg-[#A159FF]'
+                        : data.data.aqi >= 201
+                        ? 'bg-[#9866F2]'
+                        : data.data.aqi >= 151
+                        ? 'bg-[#9073E6]'
+                        : data.data.aqi >= 101
+                        ? 'bg-[#8780D9]'
+                        : data.data.aqi >= 51
+                        ? 'bg-[#759BBF]'
+                        : data.data.aqi >= 0
+                        ? 'bg-[#5BC299]'
+                        : 'bg-[#d96a6a]'
+                    }`}>
+                    <Image
+                      src={picture.urls.regular}
+                      alt={cityName}
+                      layout='fill'
+                      objectFit='cover'
+                      priority={true}
+                    />
+                    <figcaption className='z-10 text-sm absolute bottom-0 text-white mb-2 ml-3'>
+                      Picture by{' '}
+                      <a className='underline' href={picture.links.html}>
+                        {picture.user.name}
+                      </a>
+                    </figcaption>
+                    <button
+                      onClick={changePicture}
+                      className='z-10 absolute bottom-0 right-0 mb-2 mr-3 text-white'>
+                      ↺
+                    </button>
+                  </figure>
+                )}
+              </div>
+              {/* --- POLLUANTS AND WEATHER ---*/}
+              <div className='flex flex-col gap-4 w-full h-fit md:w-1/2 overflow-hidden'>
+                {/* polluants */}
+                {data.data.forecast && data.data.forecast.daily && (
+                  <div className='flex flex-col gap-4 p-4 w-full bg-slate-100 rounded-md'>
+                    <p>Polluants:</p>
+                    {Object.keys(data.data.iaqi)
+                      .filter(filterPolluants)
+                      .sort()
+                      .map((keyName, index) => (
+                        <Chart
+                          key={keyName + index}
+                          data={data.data.forecast.daily[keyName]}
+                          name={polluants[keyName]}
+                          currentIaqi={data.data.iaqi[keyName].v}
+                        />
+                      ))}
+                  </div>
+                )}
+                {/* weather */}
+                <div className='flex flex-col gap-2 bg-slate-100 rounded-md p-4'>
+                  <p>Weather:</p>
                   {Object.keys(data.data.iaqi)
-                    .filter(filterPolluants)
+                    .filter(filterWeather)
                     .sort()
                     .map((keyName, index) => (
-                      <Chart
-                        key={keyName + index}
-                        data={data.data.forecast.daily[keyName]}
-                        name={polluants[keyName]}
-                        currentIaqi={data.data.iaqi[keyName].v}
-                      />
+                      <p key={keyName + index}>
+                        {weather[keyName]}: {data.data.iaqi[keyName].v}
+                      </p>
                     ))}
                 </div>
                 <div
