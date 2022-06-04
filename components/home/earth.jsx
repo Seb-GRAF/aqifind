@@ -15,7 +15,7 @@ import Prism from './prism'
 import { useThree } from '@react-three/fiber'
 
 function Globe({ radius }) {
-  const globeTexture = useLoader(TextureLoader, '/textures/globe.jpg')
+  const globeTexture = useLoader(TextureLoader, '/textures/globe2.jpg')
   return (
     <mesh rotation={[0, -Math.PI / 2, 0]}>
       <sphereBufferGeometry args={[radius, 64, 64]} />
@@ -77,21 +77,11 @@ function Earth({ data }) {
     )
   }
 
-  // Listener for mouse movement and resize events
+  // Listener resize events
   useEffect(() => {
-    const onMouseMove = (event) => {
-      const { clientX, clientY } = event
-      gsap.set('#tooltip', {
-        x: clientX,
-        y: clientY,
-      })
-    }
-
-    addEventListener('mousemove', onMouseMove)
     addEventListener('resize', onWindowResize, false)
 
     return () => {
-      removeEventListener('mousemove', onMouseMove)
       removeEventListener('resize', onWindowResize, false)
     }
   }, [])
@@ -112,20 +102,23 @@ function Earth({ data }) {
       {
         // Map through the data array to create prism
         data &&
-          data.map((el, i) => (
-            <Prism
-              radius={radius}
-              key={el.station.name + i}
-              lat={el.lat}
-              long={el.lon}
-              aqi={el.aqi}
-              info={{
-                name: el.station.name,
-                aqi: el.aqi,
-                time: el.station.time,
-              }}
-            />
-          ))
+          data.map(
+            (el, i) =>
+              el.aqi > 50 && (
+                <Prism
+                  radius={radius}
+                  key={el.station.name + i}
+                  lat={el.lat}
+                  long={el.lon}
+                  aqi={el.aqi}
+                  info={{
+                    name: el.station.name,
+                    aqi: el.aqi,
+                    time: el.station.time,
+                  }}
+                />
+              )
+          )
       }
     </group>
   )

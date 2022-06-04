@@ -14,12 +14,6 @@ const colors = {
   high: '#8BA1CA',
   moderate: '#5CC1B2',
   good: '#00FF83',
-  // hazardous: 0xaa74cf,
-  // veryUnhealthy: 0x978ed1,
-  // unhealthy: 0x83a9d4,
-  // high: 0x70c3d6,
-  // moderate: 0x5cded9,
-  // good: 0x49f8db,
 }
 
 export default function Prism({ lat, long, aqi, info, radius }) {
@@ -37,13 +31,14 @@ export default function Prism({ lat, long, aqi, info, radius }) {
   })
 
   // Prism animation
-  const animatePrism = (prism) => {
+  const animatePrism = (prism, aqi) => {
     gsap.from(prism.scale, {
       duration: 2,
       z: 0,
       ease: 'power2',
       delay: 1,
       onComplete: () => {
+        if (aqi < 201) return
         gsap.to(prism.scale, {
           duration: 2,
           z: 1.4,
@@ -101,7 +96,7 @@ export default function Prism({ lat, long, aqi, info, radius }) {
     prismRef.current.time = info.time
 
     // Start prism animation
-    if (prismRef.current) animatePrism(prismRef.current)
+    if (prismRef.current) animatePrism(prismRef.current, aqi)
   }
 
   // Displays tooltip
@@ -152,17 +147,9 @@ export default function Prism({ lat, long, aqi, info, radius }) {
           radius * properties.width,
           radius * properties.width,
           radius * properties.height,
-          10,
-          10,
-          10,
         ]}
       />
-      <meshMatcapMaterial
-        matcap={matcapTexture}
-        color={properties.color}
-        // metalness={0.5}
-        // roughness={0.5}
-      />
+      <meshMatcapMaterial matcap={matcapTexture} color={properties.color} />
     </mesh>
   )
 }

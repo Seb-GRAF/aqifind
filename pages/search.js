@@ -45,27 +45,16 @@ export default function Search() {
     }
   }
 
-  const fetchData = () => {
-    const name = location.search.replace('?q=', '').replace('%20', '-')
+  // fetch picture from unplash api
+  const fetchImages = (name) => {
     const randomPage = Math.floor(Math.random() * 5) + 1
-    setCityName(name)
-    fetch(
-      `https://api.waqi.info/feed/${name}/?token=${process.env.NEXT_PUBLIC_AQICN_API_KEY}`
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        setData(res)
-        console.log(res)
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+
+    console.log('fetching image with name:', name)
     fetch(
       `https://api.unsplash.com/search/photos?page=${randomPage}&per_page=10&query=${name}%20city&client_id=${process.env.NEXT_PUBLIC_UNSPLASH_API}`
     )
       .then((res) => res.json())
       .then((res) => {
-        // setPicture(res.results[Math.floor(Math.random() * 9)])
         setPictures(res.results)
       })
       .catch((error) => {
@@ -73,17 +62,47 @@ export default function Search() {
       })
   }
 
+  // fetch aqi from aqicn api
+  const fetchData = () => {
+    const name = location.search.replace('?q=', '').replace('%20', '-')
+    console.log(name)
+    setCityName(name)
+
+    // aqi api fetch
+    fetch(
+      `https://api.waqi.info/feed/${name}/?token=${process.env.NEXT_PUBLIC_AQICN_API_KEY}`
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        setData(res)
+
+        // if geo location : fetch city name based on lat/lon
+        if (name === 'here') {
+          setCityName(res.data.city.name)
+          fetchImages(res.data.city.name)
+        } else {
+          fetchImages(name)
+          console.log('fetched wrong image')
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
+  // cycles through pictures
   const changePicture = () => {
     setPicture(pictures[Math.floor(Math.random() * 9)])
   }
 
   useEffect(() => {
     const onMouseMove = (event) => {
+      const tooltip = document.querySelector('#tooltip')
       const { clientX, clientY } = event
-      if (document.getElementById('tooltip'))
+      if (tooltip)
         gsap.set('#tooltip', {
-          x: clientX,
-          y: clientY,
+          x: clientX - tooltip.offsetWidth / 2,
+          y: clientY - tooltip.offsetHeight - 15,
         })
     }
     addEventListener('mousemove', onMouseMove)
@@ -119,21 +138,25 @@ export default function Search() {
         {data && data.status === 'ok' ? (
           <>
             {/* --- TITLE SECTION --- */}
-            <div className='flex flex-col gap-2'>
-              <h1 className=' text-3xl font-bold tracking-wider'>
-                Air quality in{' '}
-                <b className='capitalize font-bold tracking-wider'>
-                  {decodeURIComponent(cityName)}
-                </b>
-              </h1>
-              <p className='opacity-70'>
-                Air quality index (AQI) and other relevant air pollution data in{' '}
-                <b className='capitalize font-normal'>{cityName}</b>
-              </p>
-              <p className='opacity-70 text-sm mt-3'>
-                Last updated {moment(data.data.time.iso).fromNow()}
-              </p>
-            </div>
+            {cityName !== 'here' ? (
+              <div className='flex flex-col gap-2'>
+                <h1 className=' text-3xl font-bold tracking-wider'>
+                  Air quality in{' '}
+                  <b className='capitalize font-bold tracking-wider'>
+                    {decodeURIComponent(cityName)}
+                  </b>
+                </h1>
+                <p className='opacity-70'>
+                  Air quality index (AQI) and other relevant air pollution data
+                  in <b className='capitalize font-normal'>{cityName}</b>
+                </p>
+                <p className='opacity-70 text-sm mt-3'>
+                  Last updated {moment(data.data.time.iso).fromNow()}
+                </p>
+              </div>
+            ) : (
+              ''
+            )}
             <div className='flex flex-col md:flex-row  gap-4'>
               {/* --- CITY IMAGE AND AQI --- */}
               <div className='flex flex-col gap-4 w-full md:w-1/2 overflow-hidden '>
@@ -247,7 +270,9 @@ export default function Search() {
                 </div>
                 <div
                   id='tooltip'
-                  className='fixed hidden w-64 text-sm p-2 rounded-md bg-emerald-400/50 top-0 left-0 backdrop-blur border-solid border-black shadow-lg pointer-events-none'></div>
+                  className='fixed hidden w-64 text-sm p-2 rounded-md top-0 left-0 backdrop-blur border-solid border-black shadow-lg pointer-events-none text-black bg-emerald-400 leading-4
+
+                  before:block before:content-[""] before:absolute before:bottom-[-8px] before:left-1/2 before:-translate-x-1/2 before:w-0 before:h-0 before:pointer-events-none before:border-x-8 before:border-t-8 before:border-solid before:border-x-transparent before:border-t-emerald-400 before:shadow-lg'></div>
               </div>
             </div>
           </>
