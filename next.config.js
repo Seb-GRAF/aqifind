@@ -13,13 +13,13 @@ module.exports = {
     return config
   },
   images: {
-    domains: ['images.unsplash.com'],
+    domains: ['images.unsplash.com', 'openweathermap.org'],
   },
   env: {
     NEXT_PUBLIC_UNSPLASH_API: process.env.NEXT_PUBLIC_UNSPLASH_API,
     NEXT_PUBLIC_AQICN_API_KEY: process.env.NEXT_PUBLIC_AQICN_API_KEY,
     NEXT_PUBLIC_GOOGLE_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
-    NEXT_PUBLIC_POSITIONSTACK_API_KEY:
-      process.env.NEXT_PUBLIC_POSITIONSTACK_API_KEY,
+    NEXT_PUBLIC_OPENWEATHER_API_KEY:
+      process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY,
   },
 }

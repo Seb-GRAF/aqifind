@@ -19,19 +19,26 @@ export default function Nav() {
     language: 'en',
 
     onPlaceSelected: (place) => {
+      const lat = place.geometry.location.lat()
+      const lon = place.geometry.location.lng()
+
       if (place === undefined) return
 
       if (Object.keys(place).length === 1) {
-        setSearchLink(`/search?q=${place.name.toLowerCase()}`)
-        router.push(`/search?q=${place.name.toLowerCase()}`)
+        setSearchLink(
+          `/search?city=${place.name.toLowerCase()}&lat=${lat}&lon=${lon}}`
+        )
+        router.push(
+          `/search?city=${place.name.toLowerCase()}&lat=${lat}&lon=${lon}`
+        )
       }
 
       if (Object.keys(place).length > 1) {
         setSearchLink(
-          `/search?q=${place.address_components[0].long_name.toLowerCase()}`
+          `/search?city=${place.address_components[0].long_name.toLowerCase()}&lat=${lat}&lon=${lon}`
         )
         router.push(
-          `/search?q=${place.address_components[0].long_name.toLowerCase()}`
+          `/search?city=${place.address_components[0].long_name.toLowerCase()}&lat=${lat}&lon=${lon}`
         )
       }
     },

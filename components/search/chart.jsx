@@ -60,7 +60,7 @@ export default function Chart({ data, name, currentIaqi }) {
 
   return (
     data && (
-      <div className='flex gap-4 h-40 w-full items-center justify-start bg-white rounded-md  px-4 overflow-x-scroll overflow-y-hidden scr'>
+      <div className='flex gap-4 h-40 w-full items-center justify-start bg-white rounded-md  px-4 overflow-x-scroll overflow-y-hidden'>
         <div className='flex flex-col justify-center items-center w-24 text-right bg-slate-100 p-3 rounded-md'>
           <p
             className='cursor-pointer underline mb-4'
@@ -80,27 +80,26 @@ export default function Chart({ data, name, currentIaqi }) {
               data={data}
               margin={{ top: 15, right: 20, bottom: 0, left: 0 }}>
               <Bar
-                maxBarSize={30}
+                maxBarSize={20}
                 type='natural'
                 dataKey='min'
                 fill='#4ADE80'
                 stroke='none'
-                stackId='a'
+                // stackId='a'
               />
               <Bar
-                maxBarSize={30}
+                maxBarSize={20}
                 type='natural'
                 dataKey='max'
                 fill='#7E8FCC'
                 stroke='none'
-                stackId='a'
+                // stackId='a'
               />
               {/* <CartesianGrid stroke='#9C9C9C' strokeDasharray='2 2' /> */}
               <XAxis
                 dataKey='day'
-                tickFormatter={(e) => moment(e).format('DD MMMM')}
+                tickFormatter={(e) => moment(e).format('dd DD')}
               />
-              {/* <YAxis /> */}
               <Tooltip cursor={{ fill: 'none', stroke: '#ccc' }} />
             </BarChart>
           </ResponsiveContainer>

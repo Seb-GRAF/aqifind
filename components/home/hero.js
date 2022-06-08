@@ -8,6 +8,7 @@ import { usePlacesWidget } from 'react-google-autocomplete'
 export default function Hero() {
   const router = useRouter()
 
+  const [suggestions, setSuggestions] = useState()
   const [searchLink, setSearchLink] = useState('/')
   const [data, setData] = useState()
   const [topTen, setTopTen] = useState([])
@@ -17,11 +18,11 @@ export default function Hero() {
 
     onPlaceSelected: (place) => {
       if (place === undefined) return
-      else if (Object.keys(place).length === 1) {
-        goToSearch(place.name)
-      } else if (Object.keys(place).length > 1) {
-        goToSearch(place.address_components[0].long_name)
-      }
+      const lat = place.geometry.location.lat()
+      const lon = place.geometry.location.lng()
+      if (Object.keys(place).length === 1) goToSearch(place.name, lat, lon)
+      if (Object.keys(place).length > 1)
+        goToSearch(place.address_components[0].long_name, lat, lon)
     },
   })
 
@@ -67,7 +68,7 @@ export default function Hero() {
   }
 
   // Push route
-  const goToSearch = (city) => {
+  const goToSearch = (city, lat, lon) => {
     setSearchLink(`/search?q=${city}`)
     router.push(`/search?q=${city}`)
   }
@@ -75,7 +76,7 @@ export default function Hero() {
   // Aqi fetch
   useEffect(() => {
     fetch(
-      `https://api.waqi.info/map/bounds?latlng=-85,-180,85,180&networks=official&token=${process.env.NEXT_PUBLIC_AQICN_API_KEY}`
+      `https://api.waqi.info/v2/map/bounds?latlng=-85,-180,85,180&networks=official&token=${process.env.NEXT_PUBLIC_AQICN_API_KEY}`
     )
       .then((res) => res.json())
       .then((res) => {
@@ -107,7 +108,7 @@ export default function Hero() {
                 Discover the current AQI (Air Quality Index) of the closest
                 station to your city.
               </p>
-              <div className='flex gap-4'>
+              <div className='flex gap-4 relative'>
                 <div
                   id='search'
                   className='z-50 relative h-12 flex gap-4 flex-shrink w-full sm:max-w-[16rem] bottom-0 right-0'>
@@ -115,7 +116,7 @@ export default function Hero() {
                     type='text'
                     ref={ref}
                     onChange={(e) =>
-                      setSearchLink(`/search?q=${e.target.value}`)
+                      setSearchLink(`/search?city=${e.target.value}`)
                     }
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -135,6 +136,22 @@ export default function Hero() {
                     </button>
                   </Link>
                 </div>
+                {suggestions && (
+                  <div
+                    id='search-suggestions'
+                    className='absolute top-[120%] left-0 w-full h-16 overflow-y-scroll bg-white'>
+                    {suggestions.map((item) => {
+                      return (
+                        <p
+                          className='text-black'
+                          key={item.uid}
+                          onClick={() => goToSearch(item.name)}>
+                          {item.station.name}
+                        </p>
+                      )
+                    })}
+                  </div>
+                )}
                 <button
                   onClick={() => goToSearch('here')}
                   className='leading-[0] opacity-90'>
@@ -154,7 +171,7 @@ export default function Hero() {
               <div
                 id='tooltip'
                 className=' hidden pointer-events-none z-10 fixed flex-col gap-2 top-0 left-0 w-60 md:w-80 p-4 text-black bg-emerald-400 rounded-2xl border-solid border-black shadow-lg leading-4 invisible sm:visible
-              
+
               before:block before:content-[""] before:absolute before:top-1/2 before:-translate-y-1/2 before:-right-[8px] before:w-0 before:h-0 before:pointer-events-none before:border-y-8 before:border-l-8 before:border-solid before:border-y-transparent before:border-l-emerald-400 before:shadow-lg
               '>
                 <p id='tooltip-name'></p>

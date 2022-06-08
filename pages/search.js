@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Chart from '../components/search/chart'
 import gsap from 'gsap'
 import Layout from '../components/layout/layout'
+import Weather from '../components/search/weather'
 
 import { useRouter } from 'next/router'
 
@@ -11,10 +12,14 @@ export default function Search() {
   const [count, setCount] = useState(0)
   const [loaded, setLoaded] = useState(false)
   const [data, setData] = useState()
+  const [weatherData, setWeatherData] = useState()
   const [pictures, setPictures] = useState()
   const [picture, setPicture] = useState()
   const [cityName, setCityName] = useState('')
+  const [suggestions, setSuggestions] = useState('')
+
   const router = useRouter()
+
   const polluants = {
     pm25: 'PM2.5',
     pm10: 'PM10',
@@ -31,27 +36,38 @@ export default function Search() {
     dew: 'Dew point',
   }
 
+  // transform url params to readable string
+  const getURLParameter = (sParam) => {
+    var sPageURL = window.location.search.substring(1)
+    var sURLVariables = sPageURL.split('&')
+    for (var i = 0; i < sURLVariables.length; i++) {
+      var sParameterName = sURLVariables[i].split('=')
+      if (sParameterName[0] == sParam) {
+        return sParameterName[1]
+      }
+    }
+  }
   // polluant filter function
   const filterPolluants = (item) => {
     for (let key in polluants) {
       if (item === key) return true
     }
   }
-
   // weather filter function
   const filterWeather = (item) => {
     for (let key in weather) {
       if (item === key) return true
     }
   }
-
-  // fetch picture from unplash api
+  // fetch picture from unsplash api
   const fetchImages = (name) => {
-    const randomPage = Math.floor(Math.random() * 5) + 1
+    let randomPage = Math.floor(Math.random() * 5) + 1
 
-    console.log('fetching image with name:', name)
+    const nameArray = name.split(' ')
+    const twoWordsName = nameArray.slice(0, 2).join(' ')
+
     fetch(
-      `https://api.unsplash.com/search/photos?page=${randomPage}&per_page=10&query=${name}%20city&client_id=${process.env.NEXT_PUBLIC_UNSPLASH_API}`
+      `https://api.unsplash.com/search/photos?&per_page=10&query=${twoWordsName}&client_id=${process.env.NEXT_PUBLIC_UNSPLASH_API}`
     )
       .then((res) => res.json())
       .then((res) => {
@@ -61,40 +77,68 @@ export default function Search() {
         console.error(error)
       })
   }
-
   // fetch aqi from aqicn api
   const fetchData = () => {
-    const name = location.search.replace('?q=', '').replace('%20', '-')
-    console.log(name)
+    const name = decodeURIComponent(getURLParameter('city'))
+    name.replace('%20', '-')
     setCityName(name)
-
+    const lat = getURLParameter('lat')
+    const lon = getURLParameter('lon')
     // aqi api fetch
     fetch(
-      `https://api.waqi.info/feed/${name}/?token=${process.env.NEXT_PUBLIC_AQICN_API_KEY}`
+      lat && lon
+        ? `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${process.env.NEXT_PUBLIC_AQICN_API_KEY}`
+        : `https://api.waqi.info/feed/${name}/?token=${process.env.NEXT_PUBLIC_AQICN_API_KEY}`
     )
       .then((res) => res.json())
       .then((res) => {
         setData(res)
-
         // if geo location : fetch city name based on lat/lon
         if (name === 'here') {
           setCityName(res.data.city.name)
           fetchImages(res.data.city.name)
+          fetchSuggestions(res.data.city.name)
         } else {
           fetchImages(name)
-          console.log('fetched wrong image')
+          fetchSuggestions(name)
         }
+        fetchWeather(lat, lon)
       })
       .catch((error) => {
         console.error(error)
       })
   }
+  // fetch suggestion when city not found
+  const fetchSuggestions = (name) => {
+    if (name.length < 3) return
 
+    fetch(
+      `https://api.waqi.info/v2/search/?keyword=${name}&token=${process.env.NEXT_PUBLIC_AQICN_API_KEY}`
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        setSuggestions(res.data)
+      })
+  }
+  // fetch weather data
+  const fetchWeather = (lat, lon) => {
+    if (lat && lon) {
+      fetch(
+        `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=metric&appid=${process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY}`
+      )
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res)
+          setWeatherData(res)
+        })
+    }
+  }
   // cycles through pictures
   const changePicture = () => {
-    setPicture(pictures[Math.floor(Math.random() * 9)])
+    setPicture(pictures[Math.floor(Math.random() * pictures.length)])
   }
 
+  // event listener for tooltip
   useEffect(() => {
     const onMouseMove = (event) => {
       const tooltip = document.querySelector('#tooltip')
@@ -115,27 +159,28 @@ export default function Search() {
     }
   }, [])
 
+  // when the route changes, check that the name is different
   useEffect(() => {
-    const name = location.search
-      .replace('?q=', '')
-      .replace('%20', '-')
-      .toLowerCase()
+    const name = getURLParameter('city')
+    if (name) name.replace('%20', '-').toLowerCase()
     if (loaded && name !== cityName) {
       fetchData()
     }
   }, [router])
 
+  // count for pictures switch
   useEffect(() => {
     if (pictures) {
-      count < 10 ? setCount(count + 1) : setCount(0)
+      count < pictures.length - 1 ? setCount(count + 1) : setCount(0)
       setPicture(pictures[count])
     }
   }, [pictures])
 
   return (
     <Layout>
-      <section className='my-0 mx-auto min-h-screen flex flex-col gap-12 p-[5vw] max-w-[80rem] pt-4'>
+      <section className='my-0 mx-auto min-h-screen flex flex-col p-[5vw] max-w-[80rem] pt-4'>
         {data && data.status === 'ok' ? (
+          // --- CITY FOUND ---
           <>
             {/* --- TITLE SECTION --- */}
             {cityName !== 'here' ? (
@@ -146,10 +191,15 @@ export default function Search() {
                     {decodeURIComponent(cityName)}
                   </b>
                 </h1>
-                <p className='opacity-70'>
-                  Air quality index (AQI) and other relevant air pollution data
-                  in <b className='capitalize font-normal'>{cityName}</b>
-                </p>
+                <div className='flex flex-col'>
+                  <p className='opacity-70'>
+                    Air quality index (AQI) and other relevant air pollution
+                    data in <b className='capitalize font-normal'>{cityName}</b>
+                  </p>
+                  <p className='opacity-70'>
+                    Closest AQI station: {data.data.city.name}
+                  </p>
+                </div>
                 <p className='opacity-70 text-sm mt-3'>
                   Last updated {moment(data.data.time.iso).fromNow()}
                 </p>
@@ -157,8 +207,8 @@ export default function Search() {
             ) : (
               ''
             )}
-            <div className='flex flex-col md:flex-row  gap-4'>
-              {/* --- CITY IMAGE AND AQI --- */}
+            {/* --- CITY IMAGE AND AQI --- */}
+            <div className='flex flex-col md:flex-row gap-4 mt-12'>
               <div className='flex flex-col gap-4 w-full md:w-1/2 overflow-hidden '>
                 <div
                   className={`flex h-fit gap-4 p-4 rounded-md ${
@@ -201,7 +251,7 @@ export default function Search() {
                 </div>
                 {picture && (
                   <figure
-                    className={`relative h-52 md:h-96 flex flex-col rounded-md overflow-hidden after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1/3 after:bg-gradient-to-t after:from-black/50 after:to-transparent after:pointer-events-none ${
+                    className={`relative h-52 md:h-full flex flex-col rounded-md overflow-hidden after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1/3 after:bg-gradient-to-t after:from-black/50 after:to-transparent after:pointer-events-none ${
                       data.data.aqi >= 301
                         ? 'bg-[#A159FF]'
                         : data.data.aqi >= 201
@@ -237,9 +287,8 @@ export default function Search() {
                   </figure>
                 )}
               </div>
-              {/* --- POLLUANTS AND WEATHER ---*/}
+              {/* --- POLLUANTS ---*/}
               <div className='flex flex-col gap-4 w-full h-fit md:w-1/2 overflow-hidden'>
-                {/* polluants */}
                 {data.data.forecast && data.data.forecast.daily && (
                   <div className='flex flex-col gap-4 p-4 w-full bg-slate-100 rounded-md'>
                     <p>Polluants:</p>
@@ -256,18 +305,6 @@ export default function Search() {
                       ))}
                   </div>
                 )}
-                {/* weather */}
-                <div className='flex flex-col gap-2 bg-slate-100 rounded-md p-4'>
-                  <p>Weather:</p>
-                  {Object.keys(data.data.iaqi)
-                    .filter(filterWeather)
-                    .sort()
-                    .map((keyName, index) => (
-                      <p key={keyName + index}>
-                        {weather[keyName]}: {data.data.iaqi[keyName].v}
-                      </p>
-                    ))}
-                </div>
                 <div
                   id='tooltip'
                   className='fixed hidden w-64 text-sm p-2 rounded-md top-0 left-0 backdrop-blur border-solid border-black shadow-lg pointer-events-none text-black bg-emerald-400 leading-4
@@ -275,10 +312,66 @@ export default function Search() {
                   before:block before:content-[""] before:absolute before:bottom-[-8px] before:left-1/2 before:-translate-x-1/2 before:w-0 before:h-0 before:pointer-events-none before:border-x-8 before:border-t-8 before:border-solid before:border-x-transparent before:border-t-emerald-400 before:shadow-lg'></div>
               </div>
             </div>
+            {/* --- WEATHER ---*/}
+            <Weather weatherData={weatherData} />
           </>
         ) : // --- CITY NOT FOUND ---
         data && data.status === 'error' ? (
-          <p>City not found</p>
+          <>
+            <div className='flex flex-col gap-2'>
+              <h1 className=' text-3xl font-bold tracking-wider'>
+                City with name{' '}
+                <b className='capitalize font-bold tracking-wider'>
+                  {'"'}
+                  {decodeURIComponent(cityName)}
+                  {'"'}
+                </b>{' '}
+                not found
+              </h1>
+              {suggestions && suggestions.length > 0 ? (
+                <p className='opacity-70'>
+                  Maybe those suggestions might help:
+                </p>
+              ) : (
+                <p className='opacity-70'>
+                  No station with similar name were found...
+                </p>
+              )}
+            </div>
+            {suggestions && suggestions.length > 0 && (
+              <ul className='flex flex-col gap-1'>
+                {suggestions.map((suggestion, index) => {
+                  if (index > 5) return null
+                  return (
+                    <li key={suggestion.uid}>
+                      <a
+                        href={`/search?q=${suggestion.station.name}`}
+                        className='underline underline-offset-1'>
+                        {suggestion.station.name}
+                      </a>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+            <figure className='relative h-[40vh] md:h-[50vh] flex flex-col rounded-md overflow-hidden after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1/3 after:bg-gradient-to-t after:from-black/50 after:to-transparent after:pointer-events-none'>
+              <figcaption className='z-10 text-sm absolute bottom-0 text-white mb-2 ml-3'>
+                Picture by{' '}
+                <a
+                  className='underline'
+                  href='https://unsplash.com/photos/PP8Escz15d8'>
+                  Keith Hardy
+                </a>
+              </figcaption>
+              <Image
+                src='/pictures/desert.jpg'
+                alt='sahara desert'
+                layout='fill'
+                objectFit='cover'
+                priority={true}
+              />
+            </figure>
+          </>
         ) : (
           // --- LOADING ---
           <p>Loading...</p>
