@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import {
   BarChart,
   Bar,
-  CartesianGrid,
   XAxis,
   YAxis,
   Tooltip,
@@ -11,9 +10,7 @@ import {
 import moment from 'moment'
 import gsap from 'gsap'
 
-export default function Chart({ data, name, currentIaqi }) {
-  const [resize, setResize] = useState('100%')
-
+export default function Chart({ data, name, currentIaqi, type }) {
   const polluantsDefinition = {
     ['PM2.5']:
       'Particulate matter (PM10) describes inhalable particles, with diameters that are generally 2.5 micrometers and smaller. PM2.5 are tiny particles in the air that reduce visibility and cause the air to appear hazy when levels are elevated',
@@ -29,10 +26,7 @@ export default function Chart({ data, name, currentIaqi }) {
       'Carbon monoxide (CO) is a colorless odorless very toxic gas CO that is formed as a product of the incomplete combustion of carbon or a carbon compound',
   }
 
-  const onWindowResize = () => {
-    setResize(`${window.innerWidth / 10}%`)
-  }
-
+  // Tooltip functions
   const onMouseEnter = () => {
     const tooltip = document.querySelector('#tooltip')
     tooltip.innerHTML = polluantsDefinition[name]
@@ -41,7 +35,6 @@ export default function Chart({ data, name, currentIaqi }) {
       display: 'block',
     })
   }
-
   const onMouseLeave = () => {
     const tooltip = document.querySelector('#tooltip')
 
@@ -50,17 +43,11 @@ export default function Chart({ data, name, currentIaqi }) {
     })
   }
 
-  useEffect(() => {
-    addEventListener('resize', onWindowResize, false)
-
-    return () => {
-      removeEventListener('resize', onWindowResize, false)
-    }
-  }, [])
+  useEffect(() => {}, [])
 
   return (
     data && (
-      <div className='flex gap-4 h-40 w-full items-center justify-start bg-white rounded-md  px-4 overflow-x-scroll overflow-y-hidden'>
+      <div className='flex gap-4 h-40 w-full items-center justify-start bg-white rounded-md  pl-4'>
         <div className='flex flex-col justify-center items-center w-24 text-right bg-slate-100 p-3 rounded-md'>
           <p
             className='cursor-pointer underline mb-4'
@@ -68,11 +55,22 @@ export default function Chart({ data, name, currentIaqi }) {
             onMouseLeave={onMouseLeave}>
             {name}
           </p>
-          <p>Now</p>
-          <p>{currentIaqi}</p>
+          <p>Now:</p>
+          <p className='flex flex-col items-center'>
+            {currentIaqi}
+            <i className='text-xs ml-1'>
+              {name === 'O3'
+                ? 'μg/m3'
+                : name === 'PM2.5'
+                ? 'μg/m3'
+                : name === 'PM10'
+                ? 'μg/m3'
+                : ''}
+            </i>
+          </p>
         </div>
 
-        <div className='w-full h-full pt-2'>
+        <div className='w-full h-full overflow-hidden pt-2'>
           <ResponsiveContainer width='100%' height='100%' debounce={100}>
             <BarChart
               width={'100%'}
@@ -80,26 +78,45 @@ export default function Chart({ data, name, currentIaqi }) {
               data={data}
               margin={{ top: 15, right: 20, bottom: 0, left: 0 }}>
               <Bar
-                maxBarSize={20}
-                type='natural'
+                maxBarSize={30}
+                minBarSize={10}
                 dataKey='min'
-                fill='#4ADE80'
-                stroke='none'
-                // stackId='a'
+                fill='#7E8FCC80'
+                stroke='#7E8FCC'
+                stackId='minmax'
+                unit={
+                  name === 'O3'
+                    ? ' μg/m3'
+                    : name === 'PM2.5'
+                    ? ' μg/m3'
+                    : name === 'PM10'
+                    ? ' μg/m3'
+                    : ''
+                }
               />
               <Bar
-                maxBarSize={20}
-                type='natural'
+                maxBarSize={30}
+                minBarSize={10}
                 dataKey='max'
-                fill='#7E8FCC'
-                stroke='none'
-                // stackId='a'
+                fill='#4ADE8080'
+                stroke='#4ADE80'
+                stackId='minmax'
+                unit={
+                  name === 'O3'
+                    ? ' μg/m3'
+                    : name === 'PM2.5'
+                    ? ' μg/m3'
+                    : name === 'PM10'
+                    ? ' μg/m3'
+                    : ''
+                }
               />
               {/* <CartesianGrid stroke='#9C9C9C' strokeDasharray='2 2' /> */}
               <XAxis
                 dataKey='day'
                 tickFormatter={(e) => moment(e).format('dd DD')}
               />
+              <YAxis width={20} orientation='right' tickLine={false} />
               <Tooltip cursor={{ fill: 'none', stroke: '#ccc' }} />
             </BarChart>
           </ResponsiveContainer>

@@ -18,9 +18,14 @@ export default function Hero() {
 
     onPlaceSelected: (place) => {
       if (place === undefined) return
-      const lat = place.geometry.location.lat()
-      const lon = place.geometry.location.lng()
-      if (Object.keys(place).length === 1) goToSearch(place.name, lat, lon)
+      let lat, lon
+
+      if (place.geometry) {
+        lat = place.geometry.location.lat()
+        lon = place.geometry.location.lng()
+      }
+
+      if (Object.keys(place).length === 1) goToSearch(place.name)
       if (Object.keys(place).length > 1)
         goToSearch(place.address_components[0].long_name, lat, lon)
     },
@@ -69,8 +74,13 @@ export default function Hero() {
 
   // Push route
   const goToSearch = (city, lat, lon) => {
-    setSearchLink(`/search?q=${city}`)
-    router.push(`/search?q=${city}`)
+    if (lat && lon) {
+      setSearchLink(`/search?city=${city}&lat=${lat}&lon=${lon}`)
+      router.push(`/search?city=${city}&lat=${lat}&lon=${lon}`)
+    } else {
+      setSearchLink(`/search?city=${city}`)
+      router.push(`/search?city=${city}`)
+    }
   }
 
   // Aqi fetch
@@ -91,8 +101,8 @@ export default function Hero() {
     <>
       <section
         id='hero'
-        className='z-50 flex items-center justify-center w-full h-[80vh] max-h-[45rem] md:max-h-[80vh] md:h-[80vh] overflow-hidden
-          bg-gradient-to-br from-[#272d41] via-[#000519] to-[#0e1516]
+        className='flex items-center justify-center w-full h-[80vh] max-h-[45rem] md:max-h-[80vh] md:h-[80vh] overflow-hidden
+          bg-gradient-to-b from-[#272D41] via-[#000519] to-[#0e1516]
           after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-3/4 after:bg-gradient-to-t after:from-[#000000] after:to-transparent after:pointer-events-none'>
         <div className='relative w-full max-w-[80rem] h-full flex flex-col md:flex-row '>
           {/*-- CTA --*/}
@@ -123,10 +133,10 @@ export default function Hero() {
                         router.push(searchLink)
                       }
                     }}
-                    className='px-4 pr-14 placeholder-black text-black w-full rounded-full overflow-hidden outline-none'
+                    className='px-4 pr-14 placeholder-black text-black w-full rounded-full overflow-hidden outline-none hover:pl-6 transition-all'
                   />
                   <Link href={searchLink}>
-                    <button className='absolute bg-emerald-500 pointer-events-auto h-full right-0 leading-[0] aspect-square rounded-full'>
+                    <button className='absolute bg-emerald-500 pointer-events-auto h-full right-0 leading-[0] aspect-square rounded-full transition-all hover:bg-emerald-400'>
                       <Image
                         src='/search.png'
                         alt='search icon'
@@ -154,7 +164,7 @@ export default function Hero() {
                 )}
                 <button
                   onClick={() => goToSearch('here')}
-                  className='leading-[0] opacity-90'>
+                  className='leading-[0] opacity-90 transition-all hover:scale-110'>
                   <Image
                     src='/geoloc.svg'
                     alt='geo location'

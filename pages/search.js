@@ -5,6 +5,7 @@ import Chart from '../components/search/chart'
 import gsap from 'gsap'
 import Layout from '../components/layout/layout'
 import Weather from '../components/search/weather'
+import NotFound from '../components/search/notFound'
 
 import { useRouter } from 'next/router'
 
@@ -21,19 +22,12 @@ export default function Search() {
   const router = useRouter()
 
   const polluants = {
+    no2: 'NO2',
     pm25: 'PM2.5',
     pm10: 'PM10',
     o3: 'O3',
-    no2: 'NO2',
     so2: 'SO2',
     co: 'CO',
-  }
-  const weather = {
-    p: 'Pressure',
-    t: 'Temperature',
-    h: 'Humidity',
-    w: 'Wind',
-    dew: 'Dew point',
   }
 
   // transform url params to readable string
@@ -50,12 +44,6 @@ export default function Search() {
   // polluant filter function
   const filterPolluants = (item) => {
     for (let key in polluants) {
-      if (item === key) return true
-    }
-  }
-  // weather filter function
-  const filterWeather = (item) => {
-    for (let key in weather) {
       if (item === key) return true
     }
   }
@@ -101,8 +89,13 @@ export default function Search() {
         } else {
           fetchImages(name)
           fetchSuggestions(name)
+          fetchWeather(lat, lon)
         }
-        fetchWeather(lat, lon)
+        if (lat && lon) {
+          fetchWeather(lat, lon)
+        } else {
+          fetchWeather(res.data.city.geo[0], res.data.city.geo[1])
+        }
       })
       .catch((error) => {
         console.error(error)
@@ -128,7 +121,6 @@ export default function Search() {
       )
         .then((res) => res.json())
         .then((res) => {
-          console.log(res)
           setWeatherData(res)
         })
     }
@@ -178,7 +170,7 @@ export default function Search() {
 
   return (
     <Layout>
-      <section className='my-0 mx-auto min-h-screen flex flex-col p-[5vw] max-w-[80rem] pt-4'>
+      <section className='my-0 mx-auto flex flex-col p-[5vw] max-w-[80rem] min-h-screen'>
         {data && data.status === 'ok' ? (
           // --- CITY FOUND ---
           <>
@@ -249,60 +241,71 @@ export default function Search() {
                     </p>
                   </div>
                 </div>
-                {picture && (
-                  <figure
-                    className={`relative h-52 md:h-full flex flex-col rounded-md overflow-hidden after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1/3 after:bg-gradient-to-t after:from-black/50 after:to-transparent after:pointer-events-none ${
-                      data.data.aqi >= 301
-                        ? 'bg-[#A159FF]'
-                        : data.data.aqi >= 201
-                        ? 'bg-[#9866F2]'
-                        : data.data.aqi >= 151
-                        ? 'bg-[#9073E6]'
-                        : data.data.aqi >= 101
-                        ? 'bg-[#8780D9]'
-                        : data.data.aqi >= 51
-                        ? 'bg-[#759BBF]'
-                        : data.data.aqi >= 0
-                        ? 'bg-[#5BC299]'
-                        : 'bg-[#d96a6a]'
-                    }`}>
-                    <Image
-                      src={picture.urls.regular}
-                      alt={cityName}
-                      layout='fill'
-                      objectFit='cover'
-                      priority={true}
-                    />
-                    <figcaption className='z-10 text-sm absolute bottom-0 text-white mb-2 ml-3'>
-                      Picture by{' '}
-                      <a className='underline' href={picture.links.html}>
-                        {picture.user.name}
-                      </a>
-                    </figcaption>
-                    <button
-                      onClick={changePicture}
-                      className='z-10 absolute bottom-0 right-0 mb-2 mr-3 text-white'>
-                      ↺
-                    </button>
-                  </figure>
-                )}
+
+                <figure
+                  className={`relative h-52 md:h-full flex flex-col rounded-md overflow-hidden after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1/3 after:bg-gradient-to-t after:from-black/50 after:to-transparent after:pointer-events-none ${
+                    data.data.aqi >= 301
+                      ? 'bg-[#A159FF]'
+                      : data.data.aqi >= 201
+                      ? 'bg-[#9866F2]'
+                      : data.data.aqi >= 151
+                      ? 'bg-[#9073E6]'
+                      : data.data.aqi >= 101
+                      ? 'bg-[#8780D9]'
+                      : data.data.aqi >= 51
+                      ? 'bg-[#759BBF]'
+                      : data.data.aqi >= 0
+                      ? 'bg-[#5BC299]'
+                      : 'bg-[#d96a6a]'
+                  }`}>
+                  <Image
+                    src={picture ? picture.urls.regular : '/pictures/sky.jpg'}
+                    alt={cityName}
+                    layout='fill'
+                    objectFit='cover'
+                    priority={true}
+                  />
+                  <figcaption className='z-10 text-sm absolute bottom-0 text-white mb-2 ml-3'>
+                    Picture by{' '}
+                    <a
+                      className='underline'
+                      href={
+                        picture
+                          ? picture.links.html
+                          : 'https://unsplash.com/photos/1h2Pg97SXfA'
+                      }>
+                      {picture ? picture.user.name : 'Kenrick Mills'}
+                    </a>
+                  </figcaption>
+                  <button
+                    onClick={changePicture}
+                    className='z-10 absolute bottom-0 right-0 mb-2 mr-3 text-white'>
+                    ↺
+                  </button>
+                </figure>
               </div>
               {/* --- POLLUANTS ---*/}
               <div className='flex flex-col gap-4 w-full h-fit md:w-1/2 overflow-hidden'>
                 {data.data.forecast && data.data.forecast.daily && (
                   <div className='flex flex-col gap-4 p-4 w-full bg-slate-100 rounded-md'>
                     <p>Polluants:</p>
-                    {Object.keys(data.data.iaqi)
+                    {Object.keys(data.data.forecast.daily)
                       .filter(filterPolluants)
                       .sort()
-                      .map((keyName, index) => (
-                        <Chart
-                          key={keyName + index}
-                          data={data.data.forecast.daily[keyName]}
-                          name={polluants[keyName]}
-                          currentIaqi={data.data.iaqi[keyName].v}
-                        />
-                      ))}
+                      .map((keyName, index) => {
+                        return (
+                          <Chart
+                            key={keyName + index}
+                            data={data.data.forecast.daily[keyName]}
+                            name={polluants[keyName]}
+                            currentIaqi={
+                              data.data.iaqi[keyName]
+                                ? data.data.iaqi[keyName].v
+                                : data.data.forecast.daily[keyName][0].avg
+                            }
+                          />
+                        )
+                      })}
                   </div>
                 )}
                 <div
@@ -317,61 +320,7 @@ export default function Search() {
           </>
         ) : // --- CITY NOT FOUND ---
         data && data.status === 'error' ? (
-          <>
-            <div className='flex flex-col gap-2'>
-              <h1 className=' text-3xl font-bold tracking-wider'>
-                City with name{' '}
-                <b className='capitalize font-bold tracking-wider'>
-                  {'"'}
-                  {decodeURIComponent(cityName)}
-                  {'"'}
-                </b>{' '}
-                not found
-              </h1>
-              {suggestions && suggestions.length > 0 ? (
-                <p className='opacity-70'>
-                  Maybe those suggestions might help:
-                </p>
-              ) : (
-                <p className='opacity-70'>
-                  No station with similar name were found...
-                </p>
-              )}
-            </div>
-            {suggestions && suggestions.length > 0 && (
-              <ul className='flex flex-col gap-1'>
-                {suggestions.map((suggestion, index) => {
-                  if (index > 5) return null
-                  return (
-                    <li key={suggestion.uid}>
-                      <a
-                        href={`/search?q=${suggestion.station.name}`}
-                        className='underline underline-offset-1'>
-                        {suggestion.station.name}
-                      </a>
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-            <figure className='relative h-[40vh] md:h-[50vh] flex flex-col rounded-md overflow-hidden after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1/3 after:bg-gradient-to-t after:from-black/50 after:to-transparent after:pointer-events-none'>
-              <figcaption className='z-10 text-sm absolute bottom-0 text-white mb-2 ml-3'>
-                Picture by{' '}
-                <a
-                  className='underline'
-                  href='https://unsplash.com/photos/PP8Escz15d8'>
-                  Keith Hardy
-                </a>
-              </figcaption>
-              <Image
-                src='/pictures/desert.jpg'
-                alt='sahara desert'
-                layout='fill'
-                objectFit='cover'
-                priority={true}
-              />
-            </figure>
-          </>
+          <NotFound cityName={cityName} suggestions={suggestions} />
         ) : (
           // --- LOADING ---
           <p>Loading...</p>

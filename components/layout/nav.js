@@ -19,15 +19,17 @@ export default function Nav() {
     language: 'en',
 
     onPlaceSelected: (place) => {
-      const lat = place.geometry.location.lat()
-      const lon = place.geometry.location.lng()
-
       if (place === undefined) return
 
+      let lat, lon
+
+      if (place.geometry) {
+        lat = place.geometry.location.lat()
+        lon = place.geometry.location.lng()
+      }
+
       if (Object.keys(place).length === 1) {
-        setSearchLink(
-          `/search?city=${place.name.toLowerCase()}&lat=${lat}&lon=${lon}}`
-        )
+        setSearchLink(`/search?city=${place.name.toLowerCase()}}`)
         router.push(
           `/search?city=${place.name.toLowerCase()}&lat=${lat}&lon=${lon}`
         )
@@ -64,11 +66,11 @@ export default function Nav() {
         <input
           ref={ref}
           type='text'
-          onChange={(e) => setSearchLink(`/search?q=${e.target.value}`)}
-          className='px-4 pr-14 placeholder-black text-black w-full rounded-full overflow-hidden outline-none bg-slate-200'
+          onChange={(e) => setSearchLink(`/search?city=${e.target.value}`)}
+          className='px-4 pr-14 placeholder-black text-black w-full rounded-full overflow-hidden outline-none bg-slate-200 hover:pl-6 transition-all'
         />
         <Link href={searchLink}>
-          <button className='absolute bg-emerald-400 pointer-events-auto h-full right-0 leading-[0] aspect-square rounded-full'>
+          <button className='absolute bg-emerald-500 pointer-events-auto h-full right-0 leading-[0] aspect-square rounded-full transition-all hover:bg-emerald-400'>
             <Image src='/search.png' alt='search icon' width={20} height={20} />
           </button>
         </Link>

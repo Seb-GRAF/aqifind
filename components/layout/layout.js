@@ -8,18 +8,18 @@ gsap.registerPlugin(ScrollTrigger)
 
 export default function Layout({ children }) {
   const scrollToTop = () => {
-    window.scrollTo(0, 0)
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
   }
 
   useEffect(() => {
-    gsap.to('#scroll-to-top', {
+    gsap.from('#scroll-to-top', {
       scrollTrigger: {
         trigger: 'html',
         start: 'top+=200 top',
         end: 'top+=201 top',
-        scrub: 2,
+        scrub: true,
       },
-      bottom: '1rem',
+      bottom: '-5rem',
       ease: 'power3',
     })
   }, [])
@@ -34,17 +34,26 @@ export default function Layout({ children }) {
       <button
         id='scroll-to-top'
         onClick={scrollToTop}
-        className=' z-50 fixed -bottom-full right-4 w-12 h-12 text-xl bg-emerald-400 text-black p-2 rounded-full leading-0 shadow-md'>
-        <Image
-          src='/up.svg'
-          alt='scroll to top icon'
-          // layout='fill'
-          // objectFit='contain'
-          height={50}
-          width={50}
-        />
+        className=' z-50 fixed bottom-4 right-4 w-12 h-12 text-xl bg-emerald-400 text-black p-2 rounded-full leading-0 shadow-md transition-all hover:scale-105'>
+        <Image src='/up.svg' alt='scroll to top icon' height={50} width={50} />
       </button>
       {children}
+      <footer>
+        <div className='flex flex-col items-center justify-center p-4 bg-slate-100'>
+          <p className='text-center text-black text-sm'>
+            Website by{' '}
+            <a
+              href='
+              https://www.seb-graf.com
+              '
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-black text-sm underline'>
+              seb graf
+            </a>
+          </p>
+        </div>
+      </footer>
     </>
   )
 }
