@@ -5,24 +5,17 @@ import ScrollTrigger from 'gsap/dist/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-function ExpandableDiv({ children, left, image, title, description }) {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const toggleDescription = (e) => {
-    setIsExpanded(!isExpanded)
-    gsap.to(e.target.querySelector('#expand-description'), {
-      duration: 0.5,
-      height: !isExpanded ? 'auto' : 0,
-      ease: 'power3',
-    })
-    gsap.to(e.target.querySelector('#expand-button'), {
-      duration: 0.5,
-      rotate: !isExpanded ? '45deg' : 0,
-      ease: 'power3',
-    })
-  }
-
+function ExpandableDiv({
+  children,
+  left,
+  image,
+  title,
+  description,
+  toggleDescription,
+}) {
   return (
     <div
+      id='expandable-div'
       onClick={toggleDescription}
       className='md:max-w-lg max-w-full flex flex-col border-b-2 cursor-pointer hover:text-black/70 transition-all mb-4 hover:border-emerald-900/30 '>
       <div className='w-full flex justify-between gap-4 items-center pointer-events-none'>
@@ -44,6 +37,65 @@ function ExpandableDiv({ children, left, image, title, description }) {
 }
 
 export default function Intro() {
+  const toggleDescription = (e) => {
+    const expanded = document
+      .querySelectorAll('#expandable-div')
+      .forEach((el) => {
+        if (e.target === el) {
+          el.classList.toggle('expanded')
+
+          gsap.to(e.target.querySelector('#expand-description'), {
+            duration: 0.5,
+            height: el.classList.contains('expanded') ? 'auto' : 0,
+            ease: 'power3',
+            overwrite: true,
+          })
+          gsap.to(e.target.querySelector('#expand-button'), {
+            duration: 0.5,
+            rotate: el.classList.contains('expanded') ? '45deg' : 0,
+            ease: 'power3',
+            overwrite: true,
+          })
+        } else {
+          if (el.classList.contains('expanded')) el.classList.remove('expanded')
+          gsap.to(el.querySelector('#expand-description'), {
+            duration: 0.5,
+            height: 0,
+            ease: 'power3',
+          })
+          gsap.to(el.querySelector('#expand-button'), {
+            duration: 0.5,
+            rotate: 0,
+            ease: 'power3',
+          })
+        }
+      })
+
+    // gsap.to('#expand-description', {
+    //   duration: 0.5,
+    //   height: 0,
+    //   ease: 'power3',
+    // })
+    // gsap.to('#expand-button', {
+    //   duration: 0.5,
+    //   rotate: 0,
+    //   ease: 'power3',
+    // })
+
+    // gsap.to(e.target.querySelector('#expand-description'), {
+    //   duration: 0.5,
+    //   height: 'auto',
+    //   ease: 'power3',
+    //   overwrite: true,
+    // })
+    // gsap.to(e.target.querySelector('#expand-button'), {
+    //   duration: 0.5,
+    //   rotate: '45deg',
+    //   ease: 'power3',
+    //   overwrite: true,
+    // })
+  }
+
   useEffect(() => {
     document.querySelectorAll('.image-and-text').forEach((el) => {
       gsap.from(el, {
@@ -113,7 +165,9 @@ export default function Intro() {
               />
             </figure>
             <div>
-              <ExpandableDiv title='Industries & heating'>
+              <ExpandableDiv
+                toggleDescription={toggleDescription}
+                title='Industries & heating'>
                 <p>
                   The combustion of fossil fuels such as coal and oil in
                   industrial processes in power plants, refineries, and
@@ -129,7 +183,9 @@ export default function Intro() {
                   sulfur dioxide pollution.
                 </p>
               </ExpandableDiv>
-              <ExpandableDiv title='Traffic & mobility'>
+              <ExpandableDiv
+                toggleDescription={toggleDescription}
+                title='Traffic & mobility'>
                 <p>
                   Petrol and diesel engines of cars, ships, trains and other
                   vehicles emit pollutants such as carbon monoxide (CO),
@@ -148,7 +204,9 @@ export default function Intro() {
                   States, 35.8% of CO and 32.8% of NOx stem from road transport.
                 </p>
               </ExpandableDiv>
-              <ExpandableDiv title='Agriculture'>
+              <ExpandableDiv
+                toggleDescription={toggleDescription}
+                title='Agriculture'>
                 <p>
                   A wide range of nitrogen compounds (NO, NO2, N2), including
                   ammonia (NH3), can be attributed to fertilizer production,
