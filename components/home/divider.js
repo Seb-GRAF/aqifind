@@ -65,7 +65,7 @@ export default function Divider() {
           </cite>
         </div>
       </div>
-      <figure className='absolute left-0 top-0 w-full h-full bg-blue text-blue opacity-[15%] pointer-events-none'>
+      <figure className='absolute left-0 top-0 w-full h-full bg-blue text-blue opacity-10 pointer-events-none'>
         <Image
           src='/svg/shadows.svg'
           alt='decoration'

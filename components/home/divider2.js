@@ -10,18 +10,32 @@ import {
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Divider2() {
+  useEffect(() => {
+    gsap.from('#divider2-text', {
+      scrollTrigger: {
+        trigger: '#divider2-text',
+      },
+      y: 50,
+      opacity: 0,
+      duration: 1.5,
+      ease: 'power3',
+    })
+  }, [])
+
   return (
     <>
       <section className='relative px-[5vw] flex flex-col items-center bg-white mx-auto text-lg'>
-        <div className='absolute top-0 left-0 w-full h-[20rem] sm:h-[25rem] lg:h-[30rem] bg-neutral-100 pointer-events-none'></div>
+        <div className='absolute top-0 left-0 w-full h-[70%] bg-neutral-200 pointer-events-none'></div>
 
-        <div className='relative z-10 flex flex-col-reverse justify-between items-center md:flex-row w-full max-w-[80rem] h-[26rem] sm:h-[35rem] md:h-[50rem] lg:h-[60rem]'>
-          <h2 className='absolute left-0 top-0 text-3xl w-full md:w-1/2 lg:w-2/5 self-start text-center'>
+        <div className='relative z-10 flex flex-col justify-between items-center gap-40 w-full max-w-[60rem]'>
+          <h2
+            id='divider2-text'
+            className='text-3xl w-full md:w-1/2 lg:w-2/5 self-start text-center'>
             <b className='font-serif opacity-50'>“ </b>Covid19 showed part of
             the world what it&apos;s like living with fresh air
             <b className='font-serif opacity-50'> „</b>
           </h2>
-          <div className='md:w-4/5 absolute right-0'>
+          <div className='relative md:w-4/5 self-end before:absolute before:content-[""] before:w-full before:h-full before:-top-4 before:-left-4 before:outline before:outline-black/10'>
             <ReactCompareSlider
               itemOne={
                 <ReactCompareSliderImage

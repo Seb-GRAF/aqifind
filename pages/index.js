@@ -9,6 +9,9 @@ import Divider2 from '../components/home/divider2'
 export default function Home() {
   return (
     <Layout>
+      <div
+        id='preloader'
+        className='z-50 fixed w-screen h-screen bg-white top-0 left-0'></div>
       <Hero />
       <Intro />
       <Divider />

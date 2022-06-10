@@ -4,6 +4,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { usePlacesWidget } from 'react-google-autocomplete'
+import gsap from 'gsap'
+import ScrollTrigger from 'gsap/dist/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export default function Hero() {
   const router = useRouter()
@@ -45,7 +49,6 @@ export default function Hero() {
         )
           .then((res) => res.json())
           .then((res) => {
-            console.log(item)
             topTenArray.push({
               label: res.data[0].label,
               lat: item.lat,
@@ -61,7 +64,6 @@ export default function Hero() {
       setTopTen(topTenArray.sort((a, b) => b.aqi - a.aqi))
     })
   }
-
   // Sort data by AQI level
   const sortData = (data) => {
     let sortedData = data
@@ -71,7 +73,6 @@ export default function Hero() {
     setData(sortedData)
     // fetchTopTen(sortedData)
   }
-
   // Push route
   const goToSearch = (city, lat, lon) => {
     if (lat && lon) {
@@ -82,7 +83,6 @@ export default function Hero() {
       router.push(`/search?city=${city}`)
     }
   }
-
   // Aqi fetch
   useEffect(() => {
     fetch(
@@ -95,6 +95,32 @@ export default function Hero() {
       .catch((error) => {
         console.error(error)
       })
+
+    ScrollTrigger.create({
+      trigger: '#hero',
+      start: 'bottom-=20% top',
+      end: 'bottom-=20% top',
+      onEnter: () => {
+        gsap.to('nav', {
+          translateY: 0,
+          duration: 1,
+          ease: 'power3',
+          overwrite: true,
+        })
+      },
+      onEnterBack: () => {
+        gsap.to('nav', {
+          translateY: '-100%',
+          duration: 1,
+          ease: 'power3',
+          overwrite: true,
+        })
+      },
+    })
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
+    }
   }, [])
 
   return (

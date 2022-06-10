@@ -31,12 +31,10 @@ export default function Scene({ data }) {
       end: 'bottom top+=20%',
       onEnter: () => {
         setFrameLoop('demand')
-        console.log(frameLoop)
       },
 
       onEnterBack: () => {
         setFrameLoop('always')
-        console.log(frameLoop)
       },
     })
 
@@ -44,6 +42,16 @@ export default function Scene({ data }) {
       duration: 3,
       opacity: '1',
       ease: 'power3.out',
+    })
+
+    gsap.to('#preloader', {
+      opacity: '0',
+      duration: 1,
+      ease: 'power3',
+      onComplete: () => {
+        if (document.querySelector('#preloader'))
+          document.querySelector('#preloader').style.pointerEvents = 'none'
+      },
     })
 
     addEventListener('mousemove', onMouseMove)

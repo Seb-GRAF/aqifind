@@ -16,7 +16,6 @@ export default function WeatherChart({ weatherData }) {
       let day = moment().add(i, 'days').format('dd DD')
       weatherData[i].day = day
     }
-    console.log(weatherData)
   })
 
   return (

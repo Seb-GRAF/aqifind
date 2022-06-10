@@ -3,7 +3,7 @@ import WeatherChart from './weatherChart'
 export default function Weather({ weatherData }) {
   return (
     weatherData && (
-      <div className='flex flex-col gap-4 w-full h-fit overflow-hidden bg-neutral-100 rounded-lg p-4  mt-4'>
+      <div className='flex flex-col gap-4 w-full h-fit overflow-hidden bg-neutral-200 rounded-lg p-4  mt-6'>
         <p>Weather:</p>
         <div className='flex md:flex-row flex-col gap-4'>
           <div className='w-full md:w-auto flex gap-4'>
