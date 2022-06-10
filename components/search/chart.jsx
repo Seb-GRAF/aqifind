@@ -48,7 +48,7 @@ export default function Chart({ data, name, currentIaqi, type }) {
   return (
     data && (
       <div className='flex gap-4 h-40 w-full items-center justify-start bg-white rounded-md  pl-4'>
-        <div className='flex flex-col justify-center items-center w-24 text-right bg-slate-100 p-3 rounded-md'>
+        <div className='flex flex-col justify-center items-center w-24 text-right p-3 border border-2 rounded-md'>
           <p
             className='cursor-pointer underline mb-4'
             onMouseEnter={onMouseEnter}
@@ -57,7 +57,7 @@ export default function Chart({ data, name, currentIaqi, type }) {
           </p>
           <p>Now:</p>
           <p className='flex flex-col items-center'>
-            {currentIaqi}
+            <b>{currentIaqi}</b>
             <i className='text-xs ml-1'>
               {name === 'O3'
                 ? 'μg/m3'

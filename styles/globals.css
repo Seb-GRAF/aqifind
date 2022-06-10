@@ -10,4 +10,10 @@
   html {
     font-family: 'Raleway', sans-serif;
   }
+  .expanded h3 {
+    color: rgb(5 150 105);
+  }
+  #search-picture {
+    clip-path: inset(100% 0% 0% 0%);
+  }
 }

@@ -17,18 +17,18 @@ function ExpandableDiv({
     <div
       id='expandable-div'
       onClick={toggleDescription}
-      className='md:max-w-lg max-w-full flex flex-col border-b-2 cursor-pointer hover:text-black/70 transition-all mb-4 hover:border-emerald-900/30 '>
+      className='md:max-w-lg max-w-full flex flex-col border-b border-black/20 cursor-pointer  transition-all mb-4 hover:border-black/60 '>
       <div className='w-full flex justify-between gap-4 items-center pointer-events-none'>
         <h3 className='text-2xl mb-2 pointer-events-none'>{title}</h3>
         <button
           id='expand-button'
-          className='w-12 h-12 text-5xl pointer-events-none font-extralight leading-0'>
+          className='w-12 h-12 text-5xl font-extralight leading-0'>
           +
         </button>
       </div>
       <div
         id='expand-description'
-        className='h-0 overflow-hidden origin-top text-black cursor-auto'>
+        className='flex flex-col gap-4 h-0 pl-1 overflow-hidden origin-top text-black cursor-auto'>
         {children}
         <br />
       </div>
@@ -37,6 +37,7 @@ function ExpandableDiv({
 }
 
 export default function Intro() {
+  // passing this function to ExpandableDiv
   const toggleDescription = (e) => {
     const expanded = document
       .querySelectorAll('#expandable-div')
@@ -45,13 +46,13 @@ export default function Intro() {
           el.classList.toggle('expanded')
 
           gsap.to(e.target.querySelector('#expand-description'), {
-            duration: 0.5,
+            duration: 1,
             height: el.classList.contains('expanded') ? 'auto' : 0,
             ease: 'power3',
             overwrite: true,
           })
           gsap.to(e.target.querySelector('#expand-button'), {
-            duration: 0.5,
+            duration: 1,
             rotate: el.classList.contains('expanded') ? '45deg' : 0,
             ease: 'power3',
             overwrite: true,
@@ -59,84 +60,27 @@ export default function Intro() {
         } else {
           if (el.classList.contains('expanded')) el.classList.remove('expanded')
           gsap.to(el.querySelector('#expand-description'), {
-            duration: 0.5,
+            duration: 1,
             height: 0,
             ease: 'power3',
           })
           gsap.to(el.querySelector('#expand-button'), {
-            duration: 0.5,
+            duration: 1,
             rotate: 0,
             ease: 'power3',
           })
         }
       })
-
-    // gsap.to('#expand-description', {
-    //   duration: 0.5,
-    //   height: 0,
-    //   ease: 'power3',
-    // })
-    // gsap.to('#expand-button', {
-    //   duration: 0.5,
-    //   rotate: 0,
-    //   ease: 'power3',
-    // })
-
-    // gsap.to(e.target.querySelector('#expand-description'), {
-    //   duration: 0.5,
-    //   height: 'auto',
-    //   ease: 'power3',
-    //   overwrite: true,
-    // })
-    // gsap.to(e.target.querySelector('#expand-button'), {
-    //   duration: 0.5,
-    //   rotate: '45deg',
-    //   ease: 'power3',
-    //   overwrite: true,
-    // })
   }
-
-  useEffect(() => {
-    document.querySelectorAll('.image-and-text').forEach((el) => {
-      gsap.from(el, {
-        scrollTrigger: {
-          trigger: el,
-        },
-        translateY: 100,
-        opacity: 0,
-        duration: 1.5,
-        ease: 'power3',
-      })
-    })
-
-    gsap.from('#divider img', {
-      scrollTrigger: {
-        trigger: '#divider',
-      },
-      scale: 1.2,
-      duration: 3,
-      ease: 'power3',
-    })
-
-    gsap.from('#card', {
-      scrollTrigger: {
-        trigger: '#card',
-      },
-      translateY: 100,
-      duration: 1.5,
-      ease: 'power3',
-    })
-  }, [])
-
   return (
     <>
-      <section className='flex flex-col items-center bg-slate-100 relative mx-auto'>
-        <div className='my-0 mx-auto min-h-screen flex flex-col items-center gap-16 pt-16 '>
-          <div className='flex flex-col gap-4 items-center max-w-[80rem] px-[5vw]'>
+      <section className='flex flex-col items-center bg-neutral-100 relative mx-auto text-lg py-28 overflow-hidden'>
+        <div className='max-w-[80rem] my-0 mx-auto flex flex-col items-center gap-28 z-10'>
+          <div className='flex flex-col gap-4 items-center px-[5vw]'>
             <h2 className='text-4xl md:text-5xl'>Air pollution</h2>
             <h3 className='text-2xl md:text-3xl opacity-60'>What is it?</h3>
           </div>
-          <p className='max-w-[80rem] px-[5vw] flex flex-col gap-4'>
+          <p className='px-[5vw] flex flex-col gap-4'>
             <span>
               Air pollution can be created by both manmade and natural sources.
               Natural sources include windblown or kicked-up dust, dirt and
@@ -153,8 +97,8 @@ export default function Intro() {
               coal for heating, cooking, and energy), and agriculture.
             </span>
           </p>
-          <div className='max-w-[80rem] px-[5vw] flex flex-col md:flex-row justify-center items-center md:items-start md:gap-12 gap-4'>
-            <figure className='relative h-52 w-52'>
+          <div className='px-[5vw] flex flex-col md:flex-row justify-center items-center md:items-start gap-24'>
+            <figure className='relative h-52 md:w-72 w-[90%]'>
               <Image
                 src='/illustrations/2.png'
                 alt='Air pollution'
@@ -223,41 +167,20 @@ export default function Intro() {
               </ExpandableDiv>
             </div>
           </div>
-          <div className='relative flex items-center justify-center my-8 w-[90vw] max-w-[80rem] h-[25rem] sm:h-[40rem] margin-auto'>
-            <div className='w-10/12 h-2/3 sm:h-5/6 absolute left-0 top-0 '>
-              <figure
-                id='divider'
-                className='relative w-full h-full max-h-full max-w-full '>
-                <Image
-                  src='/pictures/1.jpg'
-                  alt='air pollution'
-                  layout='fill'
-                  objectFit='cover'
-                  priority={true}
-                />
-              </figure>
-            </div>
-            <div
-              id='card'
-              className='absolute bottom-0 right-0 md:w-1/2 w-10/12 bg-emerald-400 flex flex-col gap-4 sm:gap-8 items-center justify-between py-6 px-8
-              '>
-              <p className='leading-8 leading font-medium text-lg sm:text-xl self-start sm:mr-8 mr-4'>
-                Air pollution is one of the world’s leading risk factors for
-                death. Attributed to 11.65% of death globally, which equates to
-                millions of people each year.{' '}
-              </p>
-              <cite className='self-end ml-8'>
-                <a
-                  href='https://ourworldindata.org/air-pollution'
-                  target='_blank'
-                  rel='noreferrer'>
-                  ourworldindata.org
-                </a>
-              </cite>
-            </div>
-          </div>
         </div>
-        <div className='h-24'></div>
+
+        <figure className='absolute left-0 top-0 w-[30vw] h-[30vw] bg-blue text-blue opacity-5'>
+          <Image
+            src='/svg/wave.svg'
+            alt='decoration'
+            layout='fill'
+            width={96}
+            height={96}
+            objectFit='contain'
+            priority={true}
+            className='max-w-full'
+          />
+        </figure>
       </section>
     </>
   )

@@ -127,7 +127,8 @@ export default function Search() {
   }
   // cycles through pictures
   const changePicture = () => {
-    setPicture(pictures[Math.floor(Math.random() * pictures.length)])
+    count < pictures.length - 1 ? setCount(count + 1) : setCount(0)
+    setPicture(pictures[count])
   }
 
   // event listener for tooltip
@@ -163,8 +164,12 @@ export default function Search() {
   // count for pictures switch
   useEffect(() => {
     if (pictures) {
-      count < pictures.length - 1 ? setCount(count + 1) : setCount(0)
-      setPicture(pictures[count])
+      setPicture(pictures[Math.floor(Math.random() * pictures.length)])
+      gsap.to('#search-picture', {
+        duration: 1,
+        clipPath: 'inset(0% 0% 0% 0%)',
+        ease: 'power3',
+      })
     }
   }, [pictures])
 
@@ -243,6 +248,7 @@ export default function Search() {
                 </div>
 
                 <figure
+                  id='search-picture'
                   className={`relative h-52 md:h-full flex flex-col rounded-md overflow-hidden after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1/3 after:bg-gradient-to-t after:from-black/50 after:to-transparent after:pointer-events-none ${
                     data.data.aqi >= 301
                       ? 'bg-[#A159FF]'
@@ -258,13 +264,15 @@ export default function Search() {
                       ? 'bg-[#5BC299]'
                       : 'bg-[#d96a6a]'
                   }`}>
-                  <Image
-                    src={picture ? picture.urls.regular : '/pictures/sky.jpg'}
-                    alt={cityName}
-                    layout='fill'
-                    objectFit='cover'
-                    priority={true}
-                  />
+                  {picture && (
+                    <Image
+                      src={picture ? picture.urls.regular : '/pictures/sky.jpg'}
+                      alt={cityName}
+                      layout='fill'
+                      objectFit='cover'
+                      priority={true}
+                    />
+                  )}
                   <figcaption className='z-10 text-sm absolute bottom-0 text-white mb-2 ml-3'>
                     Picture by{' '}
                     <a
@@ -287,7 +295,7 @@ export default function Search() {
               {/* --- POLLUANTS ---*/}
               <div className='flex flex-col gap-4 w-full h-fit md:w-1/2 overflow-hidden'>
                 {data.data.forecast && data.data.forecast.daily && (
-                  <div className='flex flex-col gap-4 p-4 w-full bg-slate-100 rounded-md'>
+                  <div className='flex flex-col gap-4 p-4 w-full bg-neutral-100 rounded-md'>
                     <p>Polluants:</p>
                     {Object.keys(data.data.forecast.daily)
                       .filter(filterPolluants)
@@ -312,7 +320,7 @@ export default function Search() {
                   id='tooltip'
                   className='fixed hidden w-64 text-sm p-2 rounded-md top-0 left-0 backdrop-blur border-solid border-black shadow-lg pointer-events-none text-black bg-emerald-400 leading-4
 
-                  before:block before:content-[""] before:absolute before:bottom-[-8px] before:left-1/2 before:-translate-x-1/2 before:w-0 before:h-0 before:pointer-events-none before:border-x-8 before:border-t-8 before:border-solid before:border-x-transparent before:border-t-emerald-400 before:shadow-lg'></div>
+                  before:block before:content-[""] before:absolute before:bottom-[-8px] before:left-1/2 before:-tranneutral-x-1/2 before:w-0 before:h-0 before:pointer-events-none before:border-x-8 before:border-t-8 before:border-solid before:border-x-transparent before:border-t-emerald-400 before:shadow-lg'></div>
               </div>
             </div>
             {/* --- WEATHER ---*/}

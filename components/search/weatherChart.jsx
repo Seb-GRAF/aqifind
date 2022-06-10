@@ -21,7 +21,8 @@ export default function WeatherChart({ weatherData }) {
 
   return (
     weatherData && (
-      <div className='flex w-full h-52 pt-4 md:pt-6 bg-white rounded-lg p-3 md:p-6 overflow-x-hidden'>
+      <div className='flex flex-col items-center w-full min-h-full pt-4 md:pt-6 bg-white rounded-lg p-3 md:p-6 overflow-x-hidden'>
+        <p>Weekly temperature forecast</p>
         <ResponsiveContainer width='100%' height='100%' debounce={100}>
           <AreaChart
             width={'100%'}

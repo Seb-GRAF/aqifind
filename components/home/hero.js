@@ -109,7 +109,7 @@ export default function Hero() {
 
           <div
             id='cta'
-            className='absolute md:relative bottom-0 left-0 z-10 md:h-full w-full md:w-1/2 px-8 sm:px-16 md:px-20 text-white flex items-start md:items-center pb-12 '>
+            className='absolute md:relative bottom-0 left-0 z-10 md:h-full w-full md:w-1/2 pl-[5vw] pr-8 sm:pr-0 md:pr-0 text-white flex items-start md:items-center pb-12 '>
             <div className='flex flex-col items-start gap-4 text-lg'>
               <h1 className='text-4xl md:text-5xl'>
                 How polluted is your air?

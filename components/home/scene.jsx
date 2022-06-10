@@ -9,17 +9,8 @@ import ScrollTrigger from 'gsap/dist/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Scene({ data }) {
-  // Resize for responsive threejs
-  const onWindowResize = () => {
-    const width = window.innerWidth
-    setRadius(
-      width < 640
-        ? width / 500
-        : width < 768
-        ? width / 600
-        : Math.min(width / 1300, 1)
-    )
-  }
+  const [frameLoop, setFrameLoop] = useState('always')
+
   // Listener for mouse movement
   const onMouseMove = (event) => {
     const tooltip = document.querySelector('#tooltip')
@@ -33,12 +24,27 @@ export default function Scene({ data }) {
   }
 
   useEffect(() => {
-    // gsap.from('#canvas-container', {
-    //   duration: 3,
-    //   opacity: 0,
-    //   ease: 'power2',
-    //   delay: 1,
-    // })
+    // disables globe animation when past the first section
+    ScrollTrigger.create({
+      trigger: '#canvas-container',
+      start: 'bottom top+=20%',
+      end: 'bottom top+=20%',
+      onEnter: () => {
+        setFrameLoop('demand')
+        console.log(frameLoop)
+      },
+
+      onEnterBack: () => {
+        setFrameLoop('always')
+        console.log(frameLoop)
+      },
+    })
+
+    gsap.to('#canvas-container', {
+      duration: 3,
+      opacity: '1',
+      ease: 'power3.out',
+    })
 
     addEventListener('mousemove', onMouseMove)
 
@@ -48,9 +54,11 @@ export default function Scene({ data }) {
   }, [])
 
   return (
-    <div className='h-full cursor-pointer origin-center' id='canvas-container'>
+    <div
+      className='h-full cursor-pointer origin-center opacity-0'
+      id='canvas-container'>
       <Canvas
-        // frameloop='demand'
+        frameloop={frameLoop}
         orthographic
         camera={{
           zoom: 250,

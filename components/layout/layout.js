@@ -39,7 +39,7 @@ export default function Layout({ children }) {
       </button>
       {children}
       <footer>
-        <div className='flex flex-col items-center justify-center p-4 bg-slate-100'>
+        <div className='flex flex-col items-center justify-center p-4 bg-neutral-100'>
           <p className='text-center text-black text-sm'>
             Website by{' '}
             <a
