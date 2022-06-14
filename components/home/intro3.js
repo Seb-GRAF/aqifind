@@ -23,9 +23,9 @@ export default function Intro2() {
       <section className='py-28 md:pb-40 px-[5vw] flex flex-col items-center justify-center bg-white relative mx-auto text-lg'>
         <div
           id='intro3-text'
-          className='flex flex-col items-center justify-center gap-16 max-w-[60rem]'>
-          <h3 className='text-2xl'>
-            Lockdowns cause global air pollution declines
+          className='flex flex-col items-center justify-center gap-6 max-w-[60rem]'>
+          <h3 className='text-3xl text-left md:text-center'>
+            Lockdowns cause global air pollution to decline
           </h3>
           <p className=''>
             The global response to the COVID-19 pandemic has resulted in

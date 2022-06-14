@@ -5,6 +5,7 @@ import ScrollTrigger from 'gsap/dist/ScrollTrigger'
 import {
   ReactCompareSlider,
   ReactCompareSliderImage,
+  ReactCompareSliderHandle,
 } from 'react-compare-slider'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -27,7 +28,7 @@ export default function Divider2() {
       <section className='relative px-[5vw] flex flex-col items-center bg-white mx-auto text-lg'>
         <div className='absolute top-0 left-0 w-full h-[70%] bg-neutral-200 pointer-events-none'></div>
 
-        <div className='relative z-10 flex flex-col justify-between items-center gap-40 w-full max-w-[60rem]'>
+        <div className='relative z-10 flex flex-col justify-between items-center gap-28 w-full max-w-[60rem]'>
           <h2
             id='divider2-text'
             className='text-3xl w-full md:w-1/2 lg:w-2/5 self-start text-center'>
@@ -35,8 +36,22 @@ export default function Divider2() {
             the world what it&apos;s like living with fresh air
             <b className='font-serif opacity-50'> „</b>
           </h2>
-          <div className='relative md:w-4/5 self-end before:absolute before:content-[""] before:w-full before:h-full before:-top-4 before:-left-4 before:outline before:outline-black/10'>
+          <div className='relative md:w-4/5 self-end before:absolute before:content-[""] before:w-full before:h-full before:-top-2 before:-left-2 before:outline before:outline-black/5'>
             <ReactCompareSlider
+              handle={
+                <ReactCompareSliderHandle
+                  buttonStyle={{
+                    WebkitBackdropFilter: undefined,
+                    backdropFilter: undefined,
+                    backgroundColor: 'white',
+                    border: 0,
+                    boxShadow: undefined,
+                    color: '#444',
+                  }}
+                  linesStyle={{ opacity: 0.5 }}
+                />
+              }
+              position={20}
               itemOne={
                 <ReactCompareSliderImage
                   src='/pictures/before.jpg'

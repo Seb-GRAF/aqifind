@@ -98,8 +98,8 @@ export default function Intro2() {
   }, [])
   return (
     <>
-      <section className='z-10 py-28 md:pb-40 px-[5vw] flex flex-col items-center justify-center bg-neutral-200 relative mx-auto text-lg'>
-        <div className='z-10 md:min-h-[40rem] flex flex-col-reverse items-center gap-24 md:gap-0 md:flex-row w-full max-w-[60rem]'>
+      <section className='z-10 py-28 px-[5vw] flex flex-col items-center justify-center bg-neutral-200 relative mx-auto text-lg'>
+        <article className='z-10 md:min-h-[40rem] flex flex-col-reverse items-center gap-24 md:gap-0 md:flex-row w-full max-w-[60rem]'>
           <div className='w-full md:w-3/5 h-[30rem] overflow-hidden md:self-start'>
             <div className='flex gap-2 items-center opacity-80'>
               <h3>
@@ -124,7 +124,7 @@ export default function Intro2() {
           </div>
           <div
             id='chart-text'
-            className='w-full md:w-2/5 flex flex-col gap-4 md:max-w-md md:self-end '>
+            className='w-full md:w-2/5 flex flex-col gap-6 md:max-w-md md:self-end '>
             <h3 className=' text-3xl md:max-w-sm'>
               Some countries are hit harder than others
             </h3>
@@ -143,7 +143,7 @@ export default function Intro2() {
               hazardous (250.5 or higher).
             </p>
           </div>
-        </div>
+        </article>
 
         <figure className='absolute left-0 -bottom-64 w-[30rem] max-w-full h-[45rem] bg-blue text-blue opacity-[2%] overflow-hidden'>
           <Image

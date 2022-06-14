@@ -20,9 +20,7 @@ function ExpandableDiv({
       className='md:max-w-lg max-w-full flex flex-col border-b border-black/20 cursor-pointer  transition-all mb-4 hover:border-black/60 '>
       <div className='w-full flex justify-between gap-4 items-center pointer-events-none'>
         <h3 className='text-2xl mb-2 pointer-events-none'>{title}</h3>
-        <button
-          id='expand-button'
-          className='w-12 h-12 text-5xl font-extralight leading-0'>
+        <button className='expand-button w-12 h-12 text-5xl font-extralight leading-0'>
           +
         </button>
       </div>
@@ -46,13 +44,13 @@ export default function Intro() {
           el.classList.toggle('expanded')
 
           gsap.to(e.target.querySelector('#expand-description'), {
-            duration: 1,
+            duration: 0.75,
             height: el.classList.contains('expanded') ? 'auto' : 0,
             ease: 'power3',
             overwrite: true,
           })
-          gsap.to(e.target.querySelector('#expand-button'), {
-            duration: 1,
+          gsap.to(e.target.querySelector('.expand-button'), {
+            duration: 0.75,
             rotate: el.classList.contains('expanded') ? '45deg' : 0,
             ease: 'power3',
             overwrite: true,
@@ -64,7 +62,7 @@ export default function Intro() {
             height: 0,
             ease: 'power3',
           })
-          gsap.to(el.querySelector('#expand-button'), {
+          gsap.to(el.querySelector('.expand-button'), {
             duration: 1,
             rotate: 0,
             ease: 'power3',
@@ -86,8 +84,8 @@ export default function Intro() {
   }, [])
 
   return (
-    <section className='flex flex-col items-center bg-neutral-200 relative mx-auto text-lg pb-28 pt-20 overflow-hidden'>
-      <div className='max-w-[60rem] mx-[5vw] my-0 flex flex-col items-center gap-12 z-10'>
+    <section className='flex flex-col items-center bg-neutral-200 relative mx-auto text-lg pb-20 pt-20 overflow-hidden'>
+      <article className='max-w-[60rem] mx-[5vw] my-0 flex flex-col items-center gap-12 z-10'>
         <div className='flex flex-col gap-4 items-center px-[5vw]'>
           <h2 className='text-4xl md:text-5xl'>Air pollution</h2>
           <h3 className='text-2xl md:text-3xl opacity-60'>What is it?</h3>
@@ -109,8 +107,8 @@ export default function Intro() {
             for heating, cooking, and energy), and agriculture.
           </span>
         </p>
-        <div className='px-[5vw] flex flex-col md:flex-row justify-center items-center md:items-start gap-12'>
-          <figure className='relative h-52 md:w-72 w-[90%]'>
+        <div className='flex flex-col md:flex-row justify-center items-center md:items-start gap-12'>
+          <figure className='relative h-52 md:w-72 w-[90%] px-[5vw]'>
             <Image
               src='/illustrations/2.png'
               alt='Air pollution'
@@ -209,7 +207,7 @@ export default function Intro() {
             </ExpandableDiv>
           </div>
         </div>
-      </div>
+      </article>
 
       <figure className='absolute left-0 top-0 w-[30vw] h-[30vw] bg-blue text-blue opacity-[3%]'>
         <Image

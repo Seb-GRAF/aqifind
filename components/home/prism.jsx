@@ -58,7 +58,7 @@ export default function Prism({ lat, long, aqi, info, radius }) {
     // sets width height and color of prism based on aqi
     setProperties((prevState) => ({
       ...prevState,
-      height: Math.min(aqi / 2000, 0.11 + Math.random() * 0.1),
+      height: Math.min(aqi / 1500, 0.13 + Math.random() * 0.1),
       // height: aqi / 3000,
 
       width:

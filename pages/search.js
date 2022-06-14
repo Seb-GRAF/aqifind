@@ -6,6 +6,8 @@ import gsap from 'gsap'
 import Layout from '../components/layout/layout'
 import Weather from '../components/search/weather'
 import NotFound from '../components/search/notFound'
+import AqiMap from '../components/search/aqiMap'
+import RandomFacts from '../components/search/randomFacts'
 
 import { useRouter } from 'next/router'
 
@@ -18,6 +20,8 @@ export default function Search() {
   const [picture, setPicture] = useState()
   const [cityName, setCityName] = useState('')
   const [suggestions, setSuggestions] = useState('')
+  const [refreshMap, setRefreshMap] = useState(false)
+  const [coordinates, setCoordinates] = useState()
 
   const router = useRouter()
 
@@ -59,7 +63,7 @@ export default function Search() {
     )
       .then((res) => res.json())
       .then((res) => {
-        setPictures(res.results)
+        setPictures(res)
       })
       .catch((error) => {
         console.error(error)
@@ -67,6 +71,7 @@ export default function Search() {
   }
   // fetch aqi from aqicn api
   const fetchData = () => {
+    setRefreshMap(true)
     const name = decodeURIComponent(getURLParameter('city'))
     name.replace('%20', '-')
     setCityName(name)
@@ -80,6 +85,7 @@ export default function Search() {
     )
       .then((res) => res.json())
       .then((res) => {
+        setRefreshMap(false)
         setData(res)
         // if geo location : fetch city name based on lat/lon
         if (name === 'here') {
@@ -93,8 +99,13 @@ export default function Search() {
         }
         if (lat && lon) {
           fetchWeather(lat, lon)
+          setCoordinates({ lat: Number(lat), lon: Number(lon) })
         } else {
           fetchWeather(res.data.city.geo[0], res.data.city.geo[1])
+          setCoordinates({
+            lat: Number(res.data.city.geo[0]),
+            lon: Number(res.data.city.geo[1]),
+          })
         }
       })
       .catch((error) => {
@@ -127,8 +138,8 @@ export default function Search() {
   }
   // cycles through pictures
   const changePicture = () => {
-    count < pictures.length - 1 ? setCount(count + 1) : setCount(0)
-    setPicture(pictures[count])
+    count < pictures.results.length - 1 ? setCount(count + 1) : setCount(0)
+    setPicture(pictures.results[count])
   }
 
   // event listener for tooltip
@@ -169,19 +180,23 @@ export default function Search() {
   // count for pictures switch
   useEffect(() => {
     if (pictures) {
-      setPicture(pictures[Math.floor(Math.random() * pictures.length)])
-      gsap.to('#search-picture', {
-        duration: 1,
-        clipPath: 'inset(0% 0% 0% 0%)',
-        ease: 'power3',
-      })
+      if (pictures.total > 0) {
+        setPicture(
+          pictures.results[Math.floor(Math.random() * pictures.results.length)]
+        )
+      } else
+        setPicture({
+          urls: { regular: '/pictures/sky.jpg' },
+          links: { html: 'https://unsplash.com/photos/1h2Pg97SXfA' },
+          user: { name: 'Kenrick Mills' },
+        })
     }
   }, [pictures])
 
   return (
     <Layout>
       <section className='w-full bg-neutral-50'>
-        <div className='my-0 mx-auto flex flex-col px-[5vw] pb-24 pt-32 max-w-[70rem] min-h-screen bg-neutral-50'>
+        <div className='my-0 mx-auto flex flex-col px-[5vw] pt-24 pb-6 md:pt-28 md:pb-28 max-w-[70rem] min-h-screen bg-neutral-50'>
           {data && data.status === 'ok' ? (
             // --- CITY FOUND ---
             <>
@@ -256,7 +271,7 @@ export default function Search() {
 
                   <figure
                     id='search-picture'
-                    className={`relative h-52 md:h-full flex flex-col rounded-md overflow-hidden after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1/3 after:bg-gradient-to-t after:from-black/50 after:to-transparent after:pointer-events-none ${
+                    className={`relative h-64 md:h-full flex flex-col rounded-md overflow-hidden after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1/3 after:bg-gradient-to-t after:from-black/50 after:to-transparent after:pointer-events-none ${
                       data.data.aqi >= 301
                         ? 'bg-[#A159FF]'
                         : data.data.aqi >= 201
@@ -273,9 +288,7 @@ export default function Search() {
                     }`}>
                     {picture && (
                       <Image
-                        src={
-                          picture ? picture.urls.regular : '/pictures/sky.jpg'
-                        }
+                        src={picture.urls.regular}
                         alt={cityName}
                         layout='fill'
                         objectFit='cover'
@@ -286,12 +299,8 @@ export default function Search() {
                       Picture by{' '}
                       <a
                         className='underline'
-                        href={
-                          picture
-                            ? picture.links.html
-                            : 'https://unsplash.com/photos/1h2Pg97SXfA'
-                        }>
-                        {picture ? picture.user.name : 'Kenrick Mills'}
+                        href={picture && picture.links.html}>
+                        {picture && picture.user.name}
                       </a>
                     </figcaption>
                     <button
@@ -304,8 +313,10 @@ export default function Search() {
                 {/* --- POLLUANTS ---*/}
                 <div className='flex flex-col gap-6 w-full h-fit md:w-1/2 overflow-hidden'>
                   {data.data.forecast && data.data.forecast.daily && (
-                    <div className='flex flex-col gap-6 p-4 w-full bg-neutral-200 rounded-md'>
-                      <p>Polluants:</p>
+                    <div className='flex flex-col gap-4 p-4 w-full bg-neutral-200 rounded-md'>
+                      <h3 className='w-full text-center opacity-70 text-lg'>
+                        Polluants
+                      </h3>
                       {Object.keys(data.data.forecast.daily)
                         .filter(filterPolluants)
                         .sort()
@@ -329,11 +340,31 @@ export default function Search() {
                     id='tooltip'
                     className='fixed hidden w-64 text-sm p-2 rounded-md top-0 left-0 backdrop-blur border-solid border-black shadow-lg pointer-events-none text-black bg-emerald-400 leading-4
 
-                  before:block before:content-[""] before:absolute before:bottom-[-8px] before:left-1/2 before:-tranneutral-x-1/2 before:w-0 before:h-0 before:pointer-events-none before:border-x-8 before:border-t-8 before:border-solid before:border-x-transparent before:border-t-emerald-400 before:shadow-lg'></div>
+                  before:block before:content-[""] before:absolute before:bottom-[-8px] before:left-1/2 before:-translate-x-1/2 before:w-0 before:h-0 before:pointer-events-none before:border-x-8 before:border-t-8 before:border-solid before:border-x-transparent before:border-t-emerald-400 before:shadow-lg'></div>
                 </div>
               </div>
               {/* --- WEATHER ---*/}
               <Weather weatherData={weatherData} />
+              {!refreshMap && (
+                <AqiMap refreshMap={refreshMap} coordinates={coordinates} />
+              )}
+              <RandomFacts
+                bg={
+                  data.data.aqi >= 301
+                    ? 'bg-[#A159FF]/50'
+                    : data.data.aqi >= 201
+                    ? 'bg-[#9866F2]/50'
+                    : data.data.aqi >= 151
+                    ? 'bg-[#9073E6]/50'
+                    : data.data.aqi >= 101
+                    ? 'bg-[#8780D9]/50'
+                    : data.data.aqi >= 51
+                    ? 'bg-[#759BBF]/50'
+                    : data.data.aqi >= 0
+                    ? 'bg-[#5BC299]/50'
+                    : 'bg-[#d96a6a]/50'
+                }
+              />
             </>
           ) : // --- CITY NOT FOUND ---
           data && data.status === 'error' ? (

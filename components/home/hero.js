@@ -67,8 +67,8 @@ export default function Hero() {
   // Sort data by AQI level
   const sortData = (data) => {
     let sortedData = data
-      .filter((e) => !Number.isNaN(parseInt(e.aqi)))
-      .sort((a, b) => parseInt(b.aqi) - parseInt(a.aqi))
+      .filter((e) => !Number.isNaN(Number(e.aqi)))
+      .sort((a, b) => Number(b.aqi) - Number(a.aqi))
 
     setData(sortedData)
     // fetchTopTen(sortedData)
@@ -149,6 +149,8 @@ export default function Hero() {
                   id='search'
                   className='z-50 relative h-12 flex gap-4 flex-shrink w-full sm:max-w-[16rem] bottom-0 right-0'>
                   <input
+                    aria-label='enter the name of your city'
+                    id='search-field'
                     type='text'
                     ref={ref}
                     onChange={(e) =>
@@ -162,7 +164,9 @@ export default function Hero() {
                     className='px-4 pr-14 placeholder-black text-black w-full rounded-full overflow-hidden outline-none hover:pl-6 transition-all'
                   />
                   <Link href={searchLink}>
-                    <button className='absolute bg-emerald-500 pointer-events-auto h-full right-0 leading-[0] aspect-square rounded-full transition-all hover:bg-emerald-400'>
+                    <button
+                      aria-label='search'
+                      className='absolute bg-emerald-400 pointer-events-auto h-full right-0 leading-[0] aspect-square rounded-full transition-all hover:bg-emerald-500'>
                       <Image
                         src='/search.png'
                         alt='search icon'
@@ -189,9 +193,12 @@ export default function Hero() {
                   </div>
                 )}
                 <button
+                  aria-label='geo location'
                   onClick={() => goToSearch('here')}
                   className='leading-[0] opacity-90 transition-all hover:scale-110'>
                   <Image
+                    aria-hidden='true'
+                    focusable='false'
                     src='/geoloc.svg'
                     alt='geo location'
                     width={24}
@@ -212,7 +219,7 @@ export default function Hero() {
               '>
                 <p id='tooltip-name'></p>
                 <p id='tooltip-aqi' className='font-bold'></p>
-                <p id='tooltip-time' className='text-sm'></p>
+                <time id='tooltip-time' className='text-sm'></time>
               </div>
 
               <Scene className='w-full' data={data} />

@@ -4,8 +4,8 @@ export default function Weather({ weatherData }) {
   return (
     weatherData && (
       <div className='flex flex-col gap-4 w-full h-fit overflow-hidden bg-neutral-200 rounded-lg p-4  mt-6'>
-        <p>Weather:</p>
-        <div className='flex md:flex-row flex-col gap-4'>
+        <h3 className='w-full text-center opacity-70 text-lg'>Weather</h3>
+        <div className='flex md:flex-row flex-col gap-4 h-full'>
           <div className='w-full md:w-auto flex gap-4'>
             <div className='flex flex-col gap-4 w-1/2 md:w-auto '>
               <div className='flex flex-col items-center justify-evenly w-full h-52 bg-white rounded-lg p-4'>

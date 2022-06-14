@@ -21,5 +21,10 @@ module.exports = {
     NEXT_PUBLIC_GOOGLE_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
     NEXT_PUBLIC_OPENWEATHER_API_KEY:
       process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY,
+    NEXT_PUBLIC_MAPBOX_API_KEY: process.env.NEXT_PUBLIC_MAPBOX_API_KEY,
+  },
+  i18n: {
+    locales: ['en'],
+    defaultLocale: 'en',
   },
 }

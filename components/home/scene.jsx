@@ -44,10 +44,8 @@ export default function Scene({ data }) {
       ease: 'power3.out',
     })
 
-    gsap.to('#preloader', {
+    gsap.set('#preloader', {
       opacity: '0',
-      duration: 1,
-      ease: 'power3',
       onComplete: () => {
         if (document.querySelector('#preloader'))
           document.querySelector('#preloader').style.pointerEvents = 'none'

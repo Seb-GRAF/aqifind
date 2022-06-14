@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Nav from './nav'
 import Head from 'next/head'
 import Image from 'next/image'
@@ -7,11 +7,13 @@ import ScrollTrigger from 'gsap/dist/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Layout({ children }) {
+  const [path, setPath] = useState('/')
   const scrollToTop = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
   }
 
   useEffect(() => {
+    setPath(location.pathname)
     gsap.from('#scroll-to-top', {
       scrollTrigger: {
         trigger: 'html',
@@ -27,7 +29,17 @@ export default function Layout({ children }) {
   return (
     <>
       <Head>
-        <title>Air quality</title>
+        <title>
+          {path === '/'
+            ? 'AqiFind | Home'
+            : path === '/search'
+            ? 'AqiFind | Search'
+            : 'AqiFind | 404'}
+        </title>
+        <meta
+          name='description'
+          content='Find ou the AQI of a city or a country'
+        />
       </Head>
 
       <Nav />
@@ -39,7 +51,7 @@ export default function Layout({ children }) {
       </button>
       {children}
       <footer>
-        <div className='flex flex-col items-center justify-center p-4 bg-neutral-100'>
+        <div className='h-20 flex flex-col items-center justify-center p-4 bg-neutral-200'>
           <p className='text-center text-black text-sm'>
             Website by{' '}
             <a
