@@ -148,7 +148,8 @@ export default function Intro2() {
         <figure className='absolute left-0 -bottom-64 w-[30rem] max-w-full h-[45rem] bg-blue text-blue opacity-[2%] overflow-hidden'>
           <Image
             src='/svg/circle.svg'
-            alt='decoration'
+            alt=''
+            role='presentation'
             layout='fill'
             objectFit='cover'
             priority={true}
@@ -158,7 +159,8 @@ export default function Intro2() {
         <figure className='absolute right-0 top-0 w-[30rem] max-w-full h-[45rem] bg-blue text-blue opacity-[2%] overflow-hidden'>
           <Image
             src='/svg/circle2.svg'
-            alt='decoration'
+            alt=''
+            role='presentation'
             layout='fill'
             objectFit='cover'
             priority={true}

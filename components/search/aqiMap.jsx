@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import Map, { Marker, Popup } from 'react-map-gl'
+import Map from 'react-map-gl'
 import MapMarker from './mapMarker'
+import gsap from 'gsap'
 
 export default function AqiMap({ coordinates }) {
   const [data, setData] = useState()
@@ -17,6 +18,32 @@ export default function AqiMap({ coordinates }) {
     }
   }
 
+  const closeTooltip = () => {
+    gsap.set('#tooltip', {
+      display: 'none',
+    })
+  }
+
+  // tooltip functions
+  useEffect(() => {
+    const onMouseMove = (event) => {
+      const tooltip = document.querySelector('#tooltip')
+      const { clientX, clientY } = event
+
+      gsap.set('#tooltip', {
+        x: clientX - tooltip.offsetWidth / 2,
+        y: clientY - tooltip.offsetHeight - 15,
+      })
+    }
+
+    addEventListener('mousemove', onMouseMove)
+
+    return () => {
+      removeEventListener('mousemove', onMouseMove)
+    }
+  }, [])
+
+  // fetch AQI data from location withing bounds of city
   useEffect(() => {
     const bounds = {
       lat: { max: coordinates.lat + 2, min: coordinates.lat - 2 },
@@ -38,7 +65,7 @@ export default function AqiMap({ coordinates }) {
   }, [])
 
   return (
-    <div className='w-full h-96 md:h-[30rem] rounded-md overflow-hidden mt-6'>
+    <div className='w-full h-96 md:h-[30rem] rounded-lg overflow-hidden mt-6 bg-[#353433] p-1'>
       {coordBounds && coordinates && (
         <Map
           initialViewState={{
@@ -49,7 +76,7 @@ export default function AqiMap({ coordinates }) {
           style={{
             width: '100%',
             height: '100%',
-            borderRadius: '0.375rem',
+            // borderRadius: '0.375rem',
 
             overflow: 'hidden',
           }}
@@ -61,6 +88,7 @@ export default function AqiMap({ coordinates }) {
           ]}
           boxZoom={true}
           mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY}
+          onDragStart={closeTooltip}
           mapStyle='mapbox://styles/mapbox/dark-v10'>
           {data &&
             data.status === 'ok' &&

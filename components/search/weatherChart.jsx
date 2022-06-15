@@ -13,7 +13,7 @@ import moment from 'moment'
 export default function WeatherChart({ weatherData }) {
   useEffect(() => {
     for (let i = 0; i < weatherData.length; i++) {
-      let day = moment().add(i, 'days').format('dd DD')
+      let day = moment().add(i, 'days').format()
       weatherData[i].day = day
     }
   })
@@ -49,9 +49,24 @@ export default function WeatherChart({ weatherData }) {
                 strokeDasharray='2 2'
                 horizontal={false}
               />
-              <XAxis dataKey='day' height={22} />
+              <XAxis
+                dataKey='day'
+                height={22}
+                tickFormatter={(e) => moment(e).format('dd DD')}
+              />
               <YAxis unit='°' width={30} />
-              <Tooltip cursor={{ fill: 'none', stroke: '#ccc' }} />
+              <Tooltip
+                cursor={{ stroke: '#4C4C4C' }}
+                contentStyle={{
+                  borderRadius: '.5rem',
+                  textAlign: 'center',
+                  border: '2px solid #ccc',
+                }}
+                labelStyle={{
+                  color: 'black',
+                }}
+                labelFormatter={(e) => moment(e).format('DD MMMM YYYY')}
+              />
             </AreaChart>
           </ResponsiveContainer>
         </div>

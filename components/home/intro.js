@@ -16,7 +16,11 @@ function ExpandableDiv({
   return (
     <div
       id='expandable-div'
-      onClick={toggleDescription}
+      onClick={(e) => toggleDescription(e.target)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.code === 'Space')
+          toggleDescription(e.target.parentNode.parentNode)
+      }}
       className='md:max-w-lg max-w-full flex flex-col border-b border-black/20 cursor-pointer  transition-all mb-4 hover:border-black/60 '>
       <div className='w-full flex justify-between gap-4 items-center pointer-events-none'>
         <h3 className='text-2xl mb-2 pointer-events-none'>{title}</h3>
@@ -37,38 +41,27 @@ function ExpandableDiv({
 export default function Intro() {
   // passing this function to ExpandableDiv
   const toggleDescription = (e) => {
-    const expanded = document
-      .querySelectorAll('#expandable-div')
-      .forEach((el) => {
-        if (e.target === el) {
-          el.classList.toggle('expanded')
+    document.querySelectorAll('#expandable-div').forEach((el) => {
+      if (e === el) {
+        el.classList.toggle('expanded')
 
-          gsap.to(e.target.querySelector('#expand-description'), {
-            duration: 0.75,
-            height: el.classList.contains('expanded') ? 'auto' : 0,
-            ease: 'power3',
-            overwrite: true,
-          })
-          gsap.to(e.target.querySelector('.expand-button'), {
-            duration: 0.75,
-            rotate: el.classList.contains('expanded') ? '45deg' : 0,
-            ease: 'power3',
-            overwrite: true,
-          })
-        } else {
-          if (el.classList.contains('expanded')) el.classList.remove('expanded')
-          gsap.to(el.querySelector('#expand-description'), {
-            duration: 1,
-            height: 0,
-            ease: 'power3',
-          })
-          gsap.to(el.querySelector('.expand-button'), {
-            duration: 1,
-            rotate: 0,
-            ease: 'power3',
-          })
-        }
-      })
+        gsap.to(e.querySelector('#expand-description'), {
+          duration: 0.5,
+          height: el.classList.contains('expanded') ? 'auto' : 0,
+          ease: 'power3',
+          overwrite: true,
+          onComplete: () => {
+            ScrollTrigger.refresh()
+          },
+        })
+        gsap.to(e.querySelector('.expand-button'), {
+          duration: 0.5,
+          rotate: el.classList.contains('expanded') ? '45deg' : 0,
+          ease: 'power3',
+          overwrite: true,
+        })
+      }
+    })
   }
 
   useEffect(() => {
@@ -111,7 +104,8 @@ export default function Intro() {
           <figure className='relative h-52 md:w-72 w-[90%] px-[5vw]'>
             <Image
               src='/illustrations/2.png'
-              alt='Air pollution'
+              alt=''
+              role='presentation'
               layout='fill'
               objectFit='contain'
               priority={true}
@@ -212,7 +206,8 @@ export default function Intro() {
       <figure className='absolute left-0 top-0 w-[30vw] h-[30vw] bg-blue text-blue opacity-[3%]'>
         <Image
           src='/svg/wave.svg'
-          alt='decoration'
+          alt=''
+          role='presentation'
           layout='fill'
           width={96}
           height={96}

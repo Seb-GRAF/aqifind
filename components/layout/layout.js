@@ -45,6 +45,7 @@ export default function Layout({ children }) {
       <Nav />
       <button
         id='scroll-to-top'
+        alt='Scroll back to the top of the page'
         onClick={scrollToTop}
         className=' z-50 fixed bottom-4 right-4 w-12 h-12 text-xl bg-emerald-400 text-black p-2 rounded-full leading-0 shadow-md transition-all hover:scale-105'>
         <Image src='/up.svg' alt='scroll to top icon' height={50} width={50} />

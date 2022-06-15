@@ -10,7 +10,7 @@ import {
 import moment from 'moment'
 import gsap from 'gsap'
 
-export default function Chart({ data, name, currentIaqi, type }) {
+export default function Chart({ data, name, currentIaqi }) {
   const polluantsDefinition = {
     ['PM2.5']:
       'Particulate matter (PM10) describes inhalable particles, with diameters that are generally 2.5 micrometers and smaller. PM2.5 are tiny particles in the air that reduce visibility and cause the air to appear hazy when levels are elevated',
@@ -28,33 +28,35 @@ export default function Chart({ data, name, currentIaqi, type }) {
 
   // Tooltip functions
   const onMouseEnter = () => {
-    const tooltip = document.querySelector('#tooltip')
-    tooltip.innerHTML = polluantsDefinition[name]
-
-    gsap.set(tooltip, {
+    gsap.set(`#tooltip-${name.replace('.', '')}`, {
       display: 'block',
     })
   }
   const onMouseLeave = () => {
-    const tooltip = document.querySelector('#tooltip')
-
-    gsap.set(tooltip, {
+    gsap.set(`#tooltip-${name.replace('.', '')}`, {
       display: 'none',
     })
   }
 
-  useEffect(() => {}, [])
-
   return (
     data && (
-      <div className='flex gap-4 h-40 w-full items-center justify-start bg-white rounded-md  pl-4'>
-        <div className='flex flex-col justify-center items-center w-24 text-right p-3 border border-2 rounded-md'>
+      <div className='relative flex gap-4 h-40 w-full items-center justify-start bg-white rounded-md  pl-4'>
+        <p
+          id={`tooltip-${name.replace('.', '')}`}
+          className='hidden z-20 absolute bottom-36 left-[2.5%] p-4 text-sm bg-emerald-400 rounded-lg w-[95%] text-left pointer-events-none shadow-md
+          
+          before:block before:content-[""] before:absolute before:-bottom-3 before:-translate-y-1/2 before:left-10 before:w-0 before:h-0 before:pointer-events-none before:border-x-8 before:border-t-8 before:border-solid before:border-x-transparent before:border-t-emerald-400 before:shadow-lg
+          '>
+          {polluantsDefinition[name]}
+        </p>
+        <div className='relative flex flex-col justify-center items-center w-24 text-right p-3 border-2 rounded-md'>
           <p
-            className='cursor-pointer underline mb-4'
             onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}>
+            onMouseLeave={onMouseLeave}
+            className='cursor-pointer underline mb-4'>
             {name}
           </p>
+
           <p>Now:</p>
           <p className='flex flex-col items-center'>
             <b>{currentIaqi}</b>
@@ -81,8 +83,9 @@ export default function Chart({ data, name, currentIaqi, type }) {
                 maxBarSize={30}
                 minBarSize={10}
                 dataKey='min'
-                fill='#7E8FCC80'
-                stroke='#7E8FCC'
+                opacity={0.3}
+                fill='#475480'
+                stroke='#242A40'
                 stackId='minmax'
                 unit={
                   name === 'O3'
@@ -98,8 +101,9 @@ export default function Chart({ data, name, currentIaqi, type }) {
                 maxBarSize={30}
                 minBarSize={10}
                 dataKey='max'
-                fill='#4ADE8080'
-                stroke='#4ADE80'
+                fill='#39AA62'
+                opacity={0.3}
+                stroke='#164226'
                 stackId='minmax'
                 unit={
                   name === 'O3'
@@ -117,7 +121,18 @@ export default function Chart({ data, name, currentIaqi, type }) {
                 tickFormatter={(e) => moment(e).format('dd DD')}
               />
               <YAxis width={20} orientation='right' tickLine={false} />
-              <Tooltip cursor={{ fill: 'none', stroke: '#ccc' }} />
+              <Tooltip
+                cursor={{ fill: 'none', stroke: '#ccc' }}
+                contentStyle={{
+                  borderRadius: '.5rem',
+                  textAlign: 'center',
+                  border: '2px solid #ccc',
+                }}
+                labelStyle={{
+                  color: 'black',
+                }}
+                labelFormatter={(e) => moment(e).format('DD MMMM YYYY')}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>

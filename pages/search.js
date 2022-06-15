@@ -142,30 +142,15 @@ export default function Search() {
     setPicture(pictures.results[count])
   }
 
-  // event listener for tooltip
+  // event listener first load
   useEffect(() => {
     gsap.set('nav', {
       translateY: 0,
       overwrite: true,
     })
 
-    const onMouseMove = (event) => {
-      const tooltip = document.querySelector('#tooltip')
-      const { clientX, clientY } = event
-      if (tooltip)
-        gsap.set('#tooltip', {
-          x: clientX - tooltip.offsetWidth / 2,
-          y: clientY - tooltip.offsetHeight - 15,
-        })
-    }
-    addEventListener('mousemove', onMouseMove)
-
     fetchData()
     setLoaded(true)
-
-    return () => {
-      removeEventListener('mousemove', onMouseMove)
-    }
   }, [])
 
   // when the route changes, check that the name is different
@@ -289,7 +274,7 @@ export default function Search() {
                     {picture && (
                       <Image
                         src={picture.urls.regular}
-                        alt={cityName}
+                        alt={'random picture of ' + cityName}
                         layout='fill'
                         objectFit='cover'
                         priority={true}
@@ -311,7 +296,7 @@ export default function Search() {
                   </figure>
                 </div>
                 {/* --- POLLUANTS ---*/}
-                <div className='flex flex-col gap-6 w-full h-fit md:w-1/2 overflow-hidden'>
+                <div className='flex flex-col gap-6 w-full h-fit md:w-1/2'>
                   {data.data.forecast && data.data.forecast.daily && (
                     <div className='flex flex-col gap-4 p-4 w-full bg-neutral-200 rounded-md'>
                       <h3 className='w-full text-center opacity-70 text-lg'>
@@ -338,9 +323,7 @@ export default function Search() {
                   )}
                   <div
                     id='tooltip'
-                    className='fixed hidden w-64 text-sm p-2 rounded-md top-0 left-0 backdrop-blur border-solid border-black shadow-lg pointer-events-none text-black bg-emerald-400 leading-4
-
-                  before:block before:content-[""] before:absolute before:bottom-[-8px] before:left-1/2 before:-translate-x-1/2 before:w-0 before:h-0 before:pointer-events-none before:border-x-8 before:border-t-8 before:border-solid before:border-x-transparent before:border-t-emerald-400 before:shadow-lg'></div>
+                    className='z-50 fixed hidden w-64 text-sm p-2 rounded-md top-0 left-0 backdrop-blur border-solid border-black shadow-lg pointer-events-none text-black bg-emerald-400 leading-4                  '></div>
                 </div>
               </div>
               {/* --- WEATHER ---*/}
