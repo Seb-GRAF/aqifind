@@ -7,12 +7,8 @@ import { usePlacesWidget } from 'react-google-autocomplete'
 
 export default function Nav() {
   const [path, setPath] = useState('/')
-  const [searchLink, setSearchLink] = useState('/')
+  const [searchLink, setSearchLink] = useState('/search?city=')
   const router = useRouter()
-
-  const reload = () => {
-    router.reload()
-  }
 
   const { ref } = usePlacesWidget({
     apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
@@ -61,26 +57,52 @@ export default function Nav() {
         </Link>
 
         <form
-          className={`relative h-10 flex gap-4 flex-shrink w-full max-w-[12rem] sm:max-w-[16rem]`}>
+          className={`relative h-10 flex gap-4 flex-shrink w-full max-w-[12rem] sm:max-w-[13rem]`}>
           <input
             aria-label='enter the name of your city'
             id='search-field'
             ref={ref}
             type='text'
             onChange={(e) => setSearchLink(`/search?city=${e.target.value}`)}
-            className='px-4 pr-14 placeholder-black text-black w-full rounded-full overflow-hidden outline-none bg-neutral-200 hover:pl-6 transition-all'
+            onKeyDown={(e) => {
+              if (
+                e.key === 'Enter' &&
+                searchLink.replace(/ /g, '') !== '/search?city='
+              ) {
+                router.push(searchLink)
+              }
+            }}
+            className='pl-11 pr-7 placeholder-black/50 text-black w-full rounded-full overflow-hidden outline-none bg-neutral-200 hover:pl-12 transition-all'
           />
-          <Link href={searchLink}>
+          {searchLink !== '/search?city=' && (
+            <button
+              className='absolute right-0 top-0 w-8 h-full'
+              onClick={(e) => {
+                e.preventDefault()
+                document.querySelector('#search-field').value = ''
+                setSearchLink('/search?city=')
+              }}>
+              ×
+            </button>
+          )}
+          <Link
+            href={
+              searchLink.replace(/ /g, '') === '/search?city=' ? '' : searchLink
+            }>
             <button
               aria-label='search'
-              className='absolute bg-emerald-400 pointer-events-auto h-full right-0 leading-[0] aspect-square rounded-full transition-all hover:bg-emerald-500'>
+              className='absolute bg-emerald-400 pointer-events-auto h-3/4 left-[.4rem] top-1/2 -translate-y-1/2 leading-[0] aspect-square rounded-full transition-all hover:bg-emerald-500'
+              onClick={(e) => {
+                if (searchLink.replace(/ /g, '') === '/search?city=')
+                  e.preventDefault()
+              }}>
               <Image
                 aria-hidden='true'
                 focusable='false'
                 src='/search.png'
                 alt='search icon in the shape of a magnifying glass'
-                width={20}
-                height={20}
+                width={18}
+                height={18}
               />
             </button>
           </Link>

@@ -13,7 +13,7 @@ export default function Hero() {
   const router = useRouter()
 
   const [suggestions, setSuggestions] = useState()
-  const [searchLink, setSearchLink] = useState('/')
+  const [searchLink, setSearchLink] = useState('/search?city=')
   const [data, setData] = useState()
   const [topTen, setTopTen] = useState([])
   const { ref } = usePlacesWidget({
@@ -150,28 +150,51 @@ export default function Hero() {
                   className='z-50 relative h-12 flex gap-4 flex-shrink w-full sm:max-w-[16rem] bottom-0 right-0'>
                   <input
                     aria-label='enter the name of your city'
-                    id='search-field'
+                    id='search-field-hero'
                     type='text'
                     ref={ref}
                     onChange={(e) =>
                       setSearchLink(`/search?city=${e.target.value}`)
                     }
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (
+                        e.key === 'Enter' &&
+                        searchLink.replace(/ /g, '') !== '/search?city='
+                      ) {
                         router.push(searchLink)
                       }
                     }}
-                    className='px-4 pr-14 placeholder-black text-black w-full rounded-full overflow-hidden outline-none hover:pl-6 transition-all'
+                    className='pl-14 pr-8 placeholder-black/50 text-black w-full rounded-full overflow-hidden outline-none bg-neutral-200 hover:pl-13 transition-all'
                   />
-                  <Link href={searchLink}>
+                  {searchLink !== '/search?city=' && (
+                    <button
+                      className='absolute right-0 top-0 w-10 text-2xl h-full text-black'
+                      onClick={(e) => {
+                        e.preventDefault()
+                        document.querySelector('#search-field-hero').value = ''
+                        setSearchLink('/search?city=')
+                      }}>
+                      ×
+                    </button>
+                  )}
+                  <Link
+                    href={
+                      searchLink.replace(/ /g, '') === '/search?city='
+                        ? ''
+                        : searchLink
+                    }>
                     <button
                       aria-label='search'
-                      className='absolute bg-emerald-400 pointer-events-auto h-full right-0 leading-[0] aspect-square rounded-full transition-all hover:bg-emerald-500'>
+                      className='absolute bg-emerald-400 pointer-events-auto h-3/4 left-[.5rem] top-1/2 -translate-y-1/2 leading-[0] aspect-square rounded-full transition-all hover:bg-emerald-500'
+                      onClick={(e) => {
+                        if (searchLink.replace(/ /g, '') === '/search?city=')
+                          e.preventDefault()
+                      }}>
                       <Image
                         src='/search.png'
                         alt='search icon'
-                        width={24}
-                        height={24}
+                        width={20}
+                        height={20}
                       />
                     </button>
                   </Link>

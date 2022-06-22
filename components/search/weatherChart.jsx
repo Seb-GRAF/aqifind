@@ -11,14 +11,18 @@ import {
 import moment from 'moment'
 
 export default function WeatherChart({ weatherData }) {
+  const [isLoaded, setIsLoaded] = useState(false)
   useEffect(() => {
-    for (let i = 0; i < weatherData.length; i++) {
+    if (!weatherData) return
+    weatherData.forEach((e, i) => {
       let day = moment().add(i, 'days').format()
-      weatherData[i].day = day
-    }
-  })
+      e.day = day
+    })
+    setIsLoaded(true)
+  }, [weatherData])
 
   return (
+    isLoaded &&
     weatherData && (
       <div className='flex flex-col gap-4 items-center w-full md:h-auto h-64  bg-white rounded-lg p-3 md:p-6 overflow-hidden'>
         <p>Weekly temperature forecast</p>
