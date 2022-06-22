@@ -164,7 +164,7 @@ export default function Hero() {
                         router.push(searchLink)
                       }
                     }}
-                    className='pl-14 pr-8 placeholder-black/50 text-black w-full rounded-full overflow-hidden outline-none bg-neutral-200 hover:pl-13 transition-all'
+                    className='pl-14 pr-8 placeholder-black/50 text-black w-full rounded-full overflow-hidden outline-none bg-neutral-200 hover:pl-16 transition-all'
                   />
                   {searchLink !== '/search?city=' && (
                     <button

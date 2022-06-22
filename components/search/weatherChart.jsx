@@ -22,8 +22,7 @@ export default function WeatherChart({ weatherData }) {
   }, [weatherData])
 
   return (
-    isLoaded &&
-    weatherData && (
+    isLoaded && (
       <div className='flex flex-col gap-4 items-center w-full md:h-auto h-64  bg-white rounded-lg p-3 md:p-6 overflow-hidden'>
         <p>Weekly temperature forecast</p>
         <div className='w-full h-full '>
@@ -53,11 +52,13 @@ export default function WeatherChart({ weatherData }) {
                 strokeDasharray='2 2'
                 horizontal={false}
               />
-              <XAxis
-                dataKey='day'
-                height={22}
-                tickFormatter={(e) => moment(e).format('dd DD')}
-              />
+              {weatherData[0].day && (
+                <XAxis
+                  dataKey='day'
+                  height={22}
+                  tickFormatter={(e) => moment(e).format('dd DD')}
+                />
+              )}
               <YAxis unit='°' width={30} />
               <Tooltip
                 cursor={{ stroke: '#4C4C4C' }}
