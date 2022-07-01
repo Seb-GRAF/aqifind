@@ -1,34 +1,27 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+![image](https://user-images.githubusercontent.com/95282692/176855976-b6b74a63-ce3f-42a8-8235-211e0c8a8136.png)
 
-## Getting Started
+# Aqifind
 
-First, run the development server:
+AqiFind gives you information on air pollution, letting you search for a city to learn more on its current air quality and its weather.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+The app fetches data from Aqicn REST Api, and lays the data out in a user-friendly format using graphs. The main page shows a 3d globe build with ThreeJS that displays every station with an AQI (air quality index) higher than the norm.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[LIVE](https://aqifind.com)
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+# Project
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+This project was a way for me to learn a few cool libraries and frameworks that I have been eyeing out for a while. I wanted to try NextJS and its routing, its SEO friendly ways and its analytics via vercel. It was a fun challenge to learn its basics, I still have to learn how to endle SSR with its api capabilities.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+I had a lot of fun learning about THREE.JS and how to model dynamic data using vectors and geometries.
 
-## Learn More
+This project was also a great opportunity to include Tailwind CSS in order to make styling a bit faster, especially since I already had a lot to process learning WebGL.
 
-To learn more about Next.js, take a look at the following resources:
+# Built using:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- NextJS
+- Tailwind CSS
+- Three JS
+- GSAP
+- Aqicn API
+- Unsplash API
+- Mapbox
